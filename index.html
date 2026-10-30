@@ -6,138 +6,244 @@
     <title>INUCASTY Elections 2026</title>
     <style>
         :root {
-            --primary: #0066cc;
-            --secondary: #ff9900;
-            --bg: #f4f7f6;
-            --dark: #1e293b;
-            --admin: #2d3748;
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --secondary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease-in-out;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
             margin: 0;
-            padding: 0;
-            color: var(--dark);
+            padding: 2rem 1rem;
+            color: var(--text-dark);
         }
 
+        /* En-tête avec animation Pulse */
         header {
-            background-color: var(--primary);
-            color: white;
             text-align: center;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
+            color: white;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            background: linear-gradient(to right, #a5b4fc, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        header p {
+            color: #94a3b8;
+            margin-top: 0.5rem;
+            font-size: 1rem;
         }
 
         .container {
-            max-width: 700px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
+        /* Cartes stylisées */
         .card {
-            background: white;
-            border-radius: 12px;
+            background: var(--card-bg);
+            border-radius: 16px;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.6s ease-out;
         }
 
+        /* Inputs & Formulaires */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Boutons animés */
         .btn {
-            background-color: var(--primary);
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.85rem 1.5rem;
             font-size: 1rem;
-            border-radius: 6px;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            transition: background 0.2s;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
 
-        .btn:hover { background-color: #0052a3; }
-        .btn-pay { background-color: var(--secondary); font-weight: bold; }
-        .btn-pay:hover { background-color: #e68a00; }
-        .btn-admin { background-color: var(--admin); margin-top: 10px; }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
 
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-        input { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-pay {
+            background: var(--secondary-gradient);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
 
-        .hidden { display: none !important; }
+        .btn-pay:hover {
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
 
-        .user-info {
+        .btn-admin {
+            background: #334155;
+            box-shadow: none;
+        }
+
+        /* Profil / Solde Banner */
+        .profile-banner {
+            background: linear-gradient(to right, #f8fafc, #edf2f7);
+            border-radius: 12px;
+            padding: 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #eef6ff;
-            padding: 1rem;
-            border-radius: 8px;
+            border-left: 5px solid #6366f1;
             margin-bottom: 1.5rem;
         }
 
+        .badge {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Cartes des Candidats */
         .candidates-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
             margin-top: 1rem;
         }
 
         .candidate-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem;
+            border: 2px solid #f1f5f9;
+            border-radius: 14px;
+            padding: 1.5rem;
             text-align: center;
+            background: #fafafa;
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-box {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            border-color: #818cf8;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            background: #ffffff;
+        }
+
+        .candidate-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Masquage dynamique */
+        .hidden { display: none !important; }
+
+        /* Keyframe Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Plateforme de Vote INUCASTY 2026</h1>
-        <p>Élections Officielles Sécurisées</p>
+        <h1>INUCASTY ELECTIONS 2026</h1>
+        <p>Plateforme de Vote Numérique Sécurisée</p>
     </header>
 
     <div class="container">
 
-        <!-- SECTION 1 : AUTHENTIFICATION -->
+        <!-- AUTHENTIFICATION ÉTUDIANT -->
         <div id="authSection" class="card">
-            <h2 id="authTitle">Créer un compte Étudiant</h2>
+            <h2 id="authTitle" style="margin-top:0; color:#1e1b4b;">Créer un compte Étudiant</h2>
             <form id="authForm">
                 <div class="form-group" id="nameGroup">
                     <label for="userName">Nom et Prénom</label>
-                    <input type="text" id="userName" placeholder="Ex: Jean Dupont">
+                    <input type="text" id="userName" placeholder="Ex: Alex Mabou">
                 </div>
                 <div class="form-group">
-                    <label for="userEmail">Adresse Email (INUCASTY)</label>
+                    <label for="userEmail">Adresse Email Étudiante</label>
                     <input type="email" id="userEmail" placeholder="etudiant@inucasty.cm" required>
                 </div>
                 <div class="form-group">
                     <label for="userPassword">Mot de passe</label>
-                    <input type="password" id="userPassword" placeholder="********" required>
+                    <input type="password" id="userPassword" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn" id="authSubmitBtn">S'inscrire</button>
             </form>
-            <p style="text-align: center; margin-top: 1rem;">
+            <p style="text-align: center; margin-top: 1.2rem; font-size: 0.95rem; color: var(--text-muted);">
                 <span id="toggleText">Déjà un compte ?</span> 
-                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary); font-weight: bold;" id="toggleLink">Se connecter</a>
+                <a href="#" onclick="toggleAuthMode()" style="color: #6366f1; font-weight: bold; text-decoration: none;" id="toggleLink">Se connecter</a>
             </p>
-            <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid #eee;">
-            <button class="btn btn-admin" onclick="showAdminLogin()">Accès Administrateur</button>
+            <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid #e2e8f0;">
+            <button class="btn btn-admin" onclick="showAdminLogin()">Espace Administrateur 🔒</button>
         </div>
 
-        <!-- SECTION 2 : CONNEXION ADMIN (Masqué par défaut) -->
+        <!-- AUTHENTIFICATION ADMIN -->
         <div id="adminAuthSection" class="card hidden">
-            <h2>Connexion Administrateur</h2>
+            <h2 style="margin-top:0;">Connexion Administrateur</h2>
             <form id="adminLoginForm">
                 <div class="form-group">
                     <label>Identifiant Admin</label>
@@ -147,74 +253,88 @@
                     <label>Mot de passe</label>
                     <input type="password" id="adminPass" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn btn-admin">Se connecter en tant qu'Admin</button>
-                <button type="button" class="btn" style="background:#64748b; margin-top:10px;" onclick="hideAdminLogin()">Retour</button>
+                <button type="submit" class="btn btn-admin">Se connecter</button>
+                <button type="button" class="btn" style="background:#94a3b8; margin-top:10px;" onclick="hideAdminLogin()">Retour</button>
             </form>
         </div>
 
-        <!-- SECTION 3 : TABLEAU DE BORD ÉTUDIANT -->
+        <!-- DASHBOARD ÉTUDIANT -->
         <div id="dashboardSection" class="hidden">
-            <div class="user-info">
+            <div class="profile-banner">
                 <div>
-                    <h3 id="welcomeUser" style="margin:0;">Bienvenue</h3>
-                    <p style="margin: 5px 0 0 0; color: #555;">Solde : <strong id="creditBalance" style="color: var(--primary);">0 FCFA</strong></p>
+                    <h3 id="welcomeUser" style="margin:0; font-size:1.2rem; color:#1e293b;">Bienvenue</h3>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Solde disponible : <strong id="creditBalance" style="color: #4f46e5; font-size: 1.1rem;">0 FCFA</strong></p>
                 </div>
-                <button class="btn" style="width: auto; background-color: #dc3545;" onclick="logout()">Déconnexion</button>
+                <div>
+                    <span id="voteStatusBadge" class="badge">Non Voté</span>
+                    <button class="btn" style="width: auto; padding: 0.5rem 1rem; background: var(--accent-red); margin-left: 10px; font-size: 0.85rem;" onclick="logout()">Déconnexion</button>
+                </div>
             </div>
 
+            <!-- RECHARGE CREDIT -->
             <div class="card">
-                <h2>Recharger vos Crédits de Vote</h2>
+                <h3 style="margin-top:0; color:#1e1b4b;">⚡ Recharger des Crédits de Vote</h3>
                 <form id="paymentForm">
-                    <div class="form-group">
-                        <label for="amount">Montant (FCFA)</label>
-                        <input type="number" id="amount" placeholder="Ex: 500" min="100" required>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="amount">Montant (FCFA)</label>
+                            <input type="number" id="amount" placeholder="500" min="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Numéro Mobile Money</label>
+                            <input type="tel" id="phone" placeholder="+237670000000" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="phone">Numéro Mobile Money (Mode Test)</label>
-                        <input type="tel" id="phone" placeholder="+237670000000" required>
-                    </div>
-                    <button type="submit" class="btn btn-pay">Payer avec Notch Pay</button>
+                    <button type="submit" class="btn btn-pay">Payer via Notch Pay</button>
                 </form>
             </div>
 
+            <!-- LISTE DES CANDIDATS -->
             <div class="card">
-                <h2>Bulletins de Vote</h2>
+                <h3 style="margin-top:0; color:#1e1b4b;">🗳️ Bulletins de Vote</h3>
                 <div class="candidates-grid">
                     <div class="candidate-card">
-                        <h3>Candidat A</h3>
-                        <p>Génie Logiciel</p>
+                        <div class="candidate-avatar">A</div>
+                        <h3 style="margin:0.5rem 0 0.2rem 0;">Candidat A</h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Génie Logiciel</p>
                         <button class="btn" onclick="vote('Candidat A', 100)">Voter (100 FCFA)</button>
                     </div>
                     <div class="candidate-card">
-                        <h3>Candidat B</h3>
-                        <p>Réseaux & Télécoms</p>
+                        <div class="candidate-avatar" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">B</div>
+                        <h3 style="margin:0.5rem 0 0.2rem 0;">Candidat B</h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Réseaux & Télécoms</p>
                         <button class="btn" onclick="vote('Candidat B', 100)">Voter (100 FCFA)</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 4 : TABLEAU DE BORD ADMINISTRATEUR -->
+        <!-- DASHBOARD ADMIN -->
         <div id="adminDashboardSection" class="hidden">
-            <div class="user-info" style="background: #edf2f7; border-left: 4px solid var(--admin);">
+            <div class="profile-banner" style="border-left-color: #334155;">
                 <div>
-                    <h3 style="margin:0; color: var(--admin);">Espace Administration INUCASTY</h3>
-                    <p style="margin: 5px 0 0 0; color: #555;">Supervision en temps réel</p>
+                    <h3 style="margin:0; color:#1e293b;">Tableau de Bord Administrateur</h3>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Supervision des scrutins en temps réel</p>
                 </div>
-                <button class="btn" style="width: auto; background-color: #dc3545;" onclick="logoutAdmin()">Déconnexion Admin</button>
+                <button class="btn" style="width: auto; background: var(--accent-red); font-size:0.85rem;" onclick="logoutAdmin()">Déconnexion</button>
             </div>
 
             <div class="card">
-                <h2>Statistiques Globales</h2>
-                <div class="stat-box">
-                    <p>Total Utilisateurs Inscrits : <strong id="adminTotalUsers">0</strong></p>
-                    <p>Total Votes Exécutés : <strong id="adminTotalVotes">0</strong></p>
+                <h3 style="margin-top:0;">📊 Statistiques de la Session</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background:#f8fafc; padding:1rem; border-radius:10px; text-align:center;">
+                        <span style="font-size:0.85rem; color:var(--text-muted);">Inscrits</span>
+                        <h2 id="adminTotalUsers" style="margin:0.2rem 0 0 0; color:#4f46e5;">0</h2>
+                    </div>
+                    <div style="background:#f8fafc; padding:1rem; border-radius:10px; text-align:center;">
+                        <span style="font-size:0.85rem; color:var(--text-muted);">Votes Exécutés</span>
+                        <h2 id="adminTotalVotes" style="margin:0.2rem 0 0 0; color:#10b981;">0</h2>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <h3>Résultats des Votes</h3>
-                    <p>Candidat A : <strong id="votesCandidateA">0</strong> votes</p>
-                    <p>Candidat B : <strong id="votesCandidateB">0</strong> votes</p>
-                </div>
+
+                <h3>Résultats</h3>
+                <p>Candidat A : <strong id="votesCandidateA">0</strong> voix</p>
+                <p>Candidat B : <strong id="votesCandidateB">0</strong> voix</p>
             </div>
         </div>
 
@@ -226,7 +346,6 @@
         let isLoginMode = false;
         let currentUser = JSON.parse(localStorage.getItem('inucasty_current_user')) || null;
 
-        // Identifiants Administrateur
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "admin2026";
 
@@ -247,25 +366,22 @@
 
         document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const u = document.getElementById('adminUser').value;
-            const p = document.getElementById('adminPass').value;
-
-            if (u === ADMIN_USER && p === ADMIN_PASS) {
+            if (document.getElementById('adminUser').value === ADMIN_USER && document.getElementById('adminPass').value === ADMIN_PASS) {
                 document.getElementById('adminAuthSection').classList.add('hidden');
                 document.getElementById('adminDashboardSection').classList.remove('hidden');
                 loadAdminStats();
             } else {
-                alert("Identifiants Administrateur incorrects !");
+                alert("Identifiants incorrects !");
             }
         });
 
         function loadAdminStats() {
             const users = JSON.parse(localStorage.getItem('inucasty_users')) || [];
-            const votesA = localStorage.getItem('votes_Candidat A') || 0;
-            const votesB = localStorage.getItem('votes_Candidat B') || 0;
+            const votesA = parseInt(localStorage.getItem('votes_Candidat A')) || 0;
+            const votesB = parseInt(localStorage.getItem('votes_Candidat B')) || 0;
 
             document.getElementById('adminTotalUsers').innerText = users.length;
-            document.getElementById('adminTotalVotes').innerText = parseInt(votesA) + parseInt(votesB);
+            document.getElementById('adminTotalVotes').innerText = votesA + votesB;
             document.getElementById('votesCandidateA').innerText = votesA;
             document.getElementById('votesCandidateB').innerText = votesB;
         }
@@ -293,7 +409,7 @@
 
             if (!isLoginMode) {
                 if (users.find(u => u.email === email)) {
-                    alert("Email déjà enregistré !");
+                    alert("Cet email est déjà enregistré !");
                     return;
                 }
                 const newUser = { name, email, password, credits: 0, voted: false };
@@ -317,6 +433,18 @@
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
             document.getElementById('welcomeUser').innerText = `Bienvenue, ${currentUser.name}`;
+            
+            const badge = document.getElementById('voteStatusBadge');
+            if (currentUser.voted) {
+                badge.innerText = "A déjà voté";
+                badge.style.background = "#fee2e2";
+                badge.style.color = "#991b1b";
+            } else {
+                badge.innerText = "Non Voté";
+                badge.style.background = "#dcfce7";
+                badge.style.color = "#15803d";
+            }
+
             updateBalanceUI();
         }
 
@@ -344,7 +472,7 @@
                         amount: amount,
                         currency: 'XAF',
                         customer: { phone: phone, email: currentUser.email },
-                        description: `Achat de crédits INUCASTY`,
+                        description: `Achat crédits INUCASTY`,
                         reference: `INU_${Date.now()}`,
                         callback: window.location.href
                     })
@@ -355,10 +483,10 @@
                     localStorage.setItem('pending_recharge', amount);
                     window.location.href = data.authorization_url;
                 } else {
-                    alert("Erreur paiement");
+                    alert("Erreur de paiement : " + (data.message || "Échec"));
                 }
             } catch (err) {
-                alert("Erreur serveur paiement");
+                alert("Erreur réseau Notch Pay.");
             }
         });
 
@@ -379,11 +507,11 @@
 
         function vote(candidate, cost) {
             if (currentUser.voted) {
-                alert("Vous avez déjà voté !");
+                alert("Vous avez déjà voté lors de cette élection !");
                 return;
             }
             if (currentUser.credits < cost) {
-                alert("Solde insuffisant !");
+                alert("Solde insuffisant ! Veuillez recharger votre compte.");
                 return;
             }
 
@@ -395,12 +523,11 @@
             localStorage.setItem('inucasty_users', JSON.stringify(users));
             localStorage.setItem('inucasty_current_user', JSON.stringify(currentUser));
 
-            // Incrémenter les résultats du candidat
             let currentVotes = parseInt(localStorage.getItem(`votes_${candidate}`)) || 0;
             localStorage.setItem(`votes_${candidate}`, currentVotes + 1);
 
-            updateBalanceUI();
-            alert(`Votre vote pour ${candidate} a été enregistré !`);
+            showDashboard();
+            alert(`Votre vote pour ${candidate} a été enregistré avec succès !`);
         }
     </script>
 </body>
