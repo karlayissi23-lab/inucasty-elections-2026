@@ -157,7 +157,7 @@
             <div class="bg-gradient-to-r from-blue-900 via-blue-950 to-red-600 rounded-3xl p-5 text-white shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <span class="bg-white/20 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
-                        Tarif : 1 Vote = 150 FCFA
+                        Tarif : 1 Vote = 100 FCFA
                     </span>
                     <h2 class="text-xl font-extrabold mt-1">Achetez vos crédits de vote</h2>
                     <p class="text-xs text-blue-100">Rechargez par Orange Money ou MTN Mobile Money.</p>
@@ -301,29 +301,29 @@
             <button onclick="closeRechargeModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark"></i></button>
 
             <h3 class="text-lg font-black text-blue-950 mb-1">Acheter des Crédits</h3>
-            <p class="text-xs text-slate-500 mb-4">Paiement Mobile Money (1 crédit = 150 FCFA)</p>
+            <p class="text-xs text-slate-500 mb-4">Paiement Mobile Money (1 crédit = 100 FCFA)</p>
 
             <div class="grid grid-cols-2 gap-2 mb-4">
-                <button onclick="selectPack(1, 150)" id="pack-1" class="pack-btn border-2 border-blue-900 bg-blue-50 p-3 rounded-2xl text-left">
+                <button onclick="selectPack(1, 100)" id="pack-1" class="pack-btn border-2 border-blue-900 bg-blue-50 p-3 rounded-2xl text-left">
                     <span class="block font-black text-blue-950 text-sm">1 Crédit</span>
-                    <span class="text-xs font-bold text-red-600">150 FCFA</span>
+                    <span class="text-xs font-bold text-red-600">100 FCFA</span>
                 </button>
-                <button onclick="selectPack(5, 750)" id="pack-5" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
+                <button onclick="selectPack(5, 500)" id="pack-5" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
                     <span class="block font-black text-blue-950 text-sm">5 Crédits</span>
-                    <span class="text-xs font-bold text-red-600">750 FCFA</span>
+                    <span class="text-xs font-bold text-red-600">500 FCFA</span>
                 </button>
-                <button onclick="selectPack(10, 1500)" id="pack-10" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
+                <button onclick="selectPack(10, 1000)" id="pack-10" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
                     <span class="block font-black text-blue-950 text-sm">10 Crédits</span>
-                    <span class="text-xs font-bold text-red-600">1 500 FCFA</span>
+                    <span class="text-xs font-bold text-red-600">1 000 FCFA</span>
                 </button>
-                <button onclick="selectPack(20, 3000)" id="pack-20" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
+                <button onclick="selectPack(20, 2000)" id="pack-20" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
                     <span class="block font-black text-blue-950 text-sm">20 Crédits</span>
-                    <span class="text-xs font-bold text-red-600">3 000 FCFA</span>
+                    <span class="text-xs font-bold text-red-600">2 000 FCFA</span>
                 </button>
             </div>
 
             <button onclick="processPayment()" id="btn-pay" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-xs shadow">
-                Payer 150 FCFA
+                Payer 100 FCFA
             </button>
         </div>
     </div>
@@ -338,7 +338,7 @@
 
         let currentUser = null;
         let selectedPackCredits = 1;
-        let selectedPackAmount = 150;
+        let selectedPackAmount = 100;
         let candidatesData = [];
         let votesChart = null;
 
@@ -570,6 +570,15 @@
         function selectPack(c, a) {
             selectedPackCredits = c;
             selectedPackAmount = a;
+            
+            // Mettre à jour les styles des boutons de packs
+            document.querySelectorAll('.pack-btn').forEach(btn => {
+                btn.classList.remove('border-blue-900', 'bg-blue-50');
+                btn.classList.add('border-slate-200');
+            });
+            event.currentTarget.classList.remove('border-slate-200');
+            event.currentTarget.classList.add('border-blue-900', 'bg-blue-50');
+
             document.getElementById('btn-pay').innerText = `Payer ${a.toLocaleString()} FCFA`;
         }
 
