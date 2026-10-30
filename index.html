@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INUCASTY Elections 2026 - Connexion</title>
+    <title>INUCASTY Elections 2026</title>
     <style>
         :root {
             --primary: #0066cc;
             --secondary: #ff9900;
             --bg: #f4f7f6;
             --dark: #1e293b;
+            --admin: #2d3748;
         }
 
         body {
@@ -26,10 +27,11 @@
             text-align: center;
             padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
@@ -54,40 +56,16 @@
             transition: background 0.2s;
         }
 
-        .btn:hover {
-            background-color: #0052a3;
-        }
+        .btn:hover { background-color: #0052a3; }
+        .btn-pay { background-color: var(--secondary); font-weight: bold; }
+        .btn-pay:hover { background-color: #e68a00; }
+        .btn-admin { background-color: var(--admin); margin-top: 10px; }
 
-        .btn-pay {
-            background-color: var(--secondary);
-            font-weight: bold;
-        }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
 
-        .btn-pay:hover {
-            background-color: #e68a00;
-        }
-
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
         .user-info {
             display: flex;
@@ -112,6 +90,14 @@
             padding: 1rem;
             text-align: center;
         }
+
+        .stat-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -123,7 +109,7 @@
 
     <div class="container">
 
-        <!-- SECTION 1 : AUTHENTIFICATION (INSCRIPTION / CONNEXION) -->
+        <!-- SECTION 1 : AUTHENTIFICATION -->
         <div id="authSection" class="card">
             <h2 id="authTitle">Créer un compte Étudiant</h2>
             <form id="authForm">
@@ -145,11 +131,29 @@
                 <span id="toggleText">Déjà un compte ?</span> 
                 <a href="#" onclick="toggleAuthMode()" style="color: var(--primary); font-weight: bold;" id="toggleLink">Se connecter</a>
             </p>
+            <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid #eee;">
+            <button class="btn btn-admin" onclick="showAdminLogin()">Accès Administrateur</button>
         </div>
 
-        <!-- SECTION 2 : TABLEAU DE BORD DU VOTE (Masqué par défaut) -->
+        <!-- SECTION 2 : CONNEXION ADMIN (Masqué par défaut) -->
+        <div id="adminAuthSection" class="card hidden">
+            <h2>Connexion Administrateur</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label>Identifiant Admin</label>
+                    <input type="text" id="adminUser" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="adminPass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-admin">Se connecter en tant qu'Admin</button>
+                <button type="button" class="btn" style="background:#64748b; margin-top:10px;" onclick="hideAdminLogin()">Retour</button>
+            </form>
+        </div>
+
+        <!-- SECTION 3 : TABLEAU DE BORD ÉTUDIANT -->
         <div id="dashboardSection" class="hidden">
-            
             <div class="user-info">
                 <div>
                     <h3 id="welcomeUser" style="margin:0;">Bienvenue</h3>
@@ -158,7 +162,6 @@
                 <button class="btn" style="width: auto; background-color: #dc3545;" onclick="logout()">Déconnexion</button>
             </div>
 
-            <!-- Recharge Notch Pay -->
             <div class="card">
                 <h2>Recharger vos Crédits de Vote</h2>
                 <form id="paymentForm">
@@ -169,15 +172,11 @@
                     <div class="form-group">
                         <label for="phone">Numéro Mobile Money (Mode Test)</label>
                         <input type="tel" id="phone" placeholder="+237670000000" required>
-                        <small style="display: block; margin-top: 5px; color: #666; font-size: 0.8rem;">
-                            Test succès : <code>+237670000000</code> | Échec : <code>+237670000002</code>
-                        </small>
                     </div>
                     <button type="submit" class="btn btn-pay">Payer avec Notch Pay</button>
                 </form>
             </div>
 
-            <!-- Espace de Vote -->
             <div class="card">
                 <h2>Bulletins de Vote</h2>
                 <div class="candidates-grid">
@@ -193,7 +192,30 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- SECTION 4 : TABLEAU DE BORD ADMINISTRATEUR -->
+        <div id="adminDashboardSection" class="hidden">
+            <div class="user-info" style="background: #edf2f7; border-left: 4px solid var(--admin);">
+                <div>
+                    <h3 style="margin:0; color: var(--admin);">Espace Administration INUCASTY</h3>
+                    <p style="margin: 5px 0 0 0; color: #555;">Supervision en temps réel</p>
+                </div>
+                <button class="btn" style="width: auto; background-color: #dc3545;" onclick="logoutAdmin()">Déconnexion Admin</button>
+            </div>
+
+            <div class="card">
+                <h2>Statistiques Globales</h2>
+                <div class="stat-box">
+                    <p>Total Utilisateurs Inscrits : <strong id="adminTotalUsers">0</strong></p>
+                    <p>Total Votes Exécutés : <strong id="adminTotalVotes">0</strong></p>
+                </div>
+                <div class="stat-box">
+                    <h3>Résultats des Votes</h3>
+                    <p>Candidat A : <strong id="votesCandidateA">0</strong> votes</p>
+                    <p>Candidat B : <strong id="votesCandidateB">0</strong> votes</p>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -204,17 +226,55 @@
         let isLoginMode = false;
         let currentUser = JSON.parse(localStorage.getItem('inucasty_current_user')) || null;
 
-        // Vérifier l'état de connexion au chargement
-        window.addEventListener('DOMContentLoaded', () => {
-            // Vérifier le retour de paiement Notch Pay
-            handlePaymentCallback();
+        // Identifiants Administrateur
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "admin2026";
 
-            if (currentUser) {
-                showDashboard();
+        window.addEventListener('DOMContentLoaded', () => {
+            handlePaymentCallback();
+            if (currentUser) showDashboard();
+        });
+
+        function showAdminLogin() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('adminAuthSection').classList.remove('hidden');
+        }
+
+        function hideAdminLogin() {
+            document.getElementById('adminAuthSection').classList.add('hidden');
+            document.getElementById('authSection').classList.remove('hidden');
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                document.getElementById('adminAuthSection').classList.add('hidden');
+                document.getElementById('adminDashboardSection').classList.remove('hidden');
+                loadAdminStats();
+            } else {
+                alert("Identifiants Administrateur incorrects !");
             }
         });
 
-        // Basculer entre Inscription et Connexion
+        function loadAdminStats() {
+            const users = JSON.parse(localStorage.getItem('inucasty_users')) || [];
+            const votesA = localStorage.getItem('votes_Candidat A') || 0;
+            const votesB = localStorage.getItem('votes_Candidat B') || 0;
+
+            document.getElementById('adminTotalUsers').innerText = users.length;
+            document.getElementById('adminTotalVotes').innerText = parseInt(votesA) + parseInt(votesB);
+            document.getElementById('votesCandidateA').innerText = votesA;
+            document.getElementById('votesCandidateB').innerText = votesB;
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminDashboardSection').classList.add('hidden');
+            document.getElementById('authSection').classList.remove('hidden');
+        }
+
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             document.getElementById('authTitle').innerText = isLoginMode ? "Connexion Étudiant" : "Créer un compte Étudiant";
@@ -224,29 +284,23 @@
             document.getElementById('toggleLink').innerText = isLoginMode ? "S'inscrire" : "Se connecter";
         }
 
-        // Gestion du formulaire d'authentification
         document.getElementById('authForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('userEmail').value;
             const password = document.getElementById('userPassword').value;
             const name = document.getElementById('userName').value || "Étudiant";
-
             let users = JSON.parse(localStorage.getItem('inucasty_users')) || [];
 
             if (!isLoginMode) {
-                // Inscription
-                const existing = users.find(u => u.email === email);
-                if (existing) {
-                    alert("Cet email est déjà associé à un compte !");
+                if (users.find(u => u.email === email)) {
+                    alert("Email déjà enregistré !");
                     return;
                 }
                 const newUser = { name, email, password, credits: 0, voted: false };
                 users.push(newUser);
                 localStorage.setItem('inucasty_users', JSON.stringify(users));
                 currentUser = newUser;
-                alert("Compte créé avec succès !");
             } else {
-                // Connexion
                 const found = users.find(u => u.email === email && u.password === password);
                 if (!found) {
                     alert("Email ou mot de passe incorrect.");
@@ -277,7 +331,6 @@
             document.getElementById('creditBalance').innerText = `${currentUser.credits} FCFA`;
         }
 
-        // Paiement Notch Pay
         document.getElementById('paymentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const amount = document.getElementById('amount').value;
@@ -286,10 +339,7 @@
             try {
                 const response = await fetch('https://api.notchpay.co/payments', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': NOTCHPAY_PUBLIC_KEY,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': NOTCHPAY_PUBLIC_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         amount: amount,
                         currency: 'XAF',
@@ -305,55 +355,52 @@
                     localStorage.setItem('pending_recharge', amount);
                     window.location.href = data.authorization_url;
                 } else {
-                    alert("Erreur: " + (data.message || "Impossible d'initier le paiement"));
+                    alert("Erreur paiement");
                 }
             } catch (err) {
-                console.error(err);
-                alert("Erreur de connexion au serveur de paiement.");
+                alert("Erreur serveur paiement");
             }
         });
 
-        // Gestion du retour après paiement
         function handlePaymentCallback() {
             const pendingAmount = localStorage.getItem('pending_recharge');
             const urlParams = new URLSearchParams(window.location.search);
 
             if (pendingAmount && currentUser && (urlParams.get('status') === 'complete' || urlParams.get('reference'))) {
                 currentUser.credits += parseInt(pendingAmount);
-                
-                // Mettre à jour la liste globale des utilisateurs
                 let users = JSON.parse(localStorage.getItem('inucasty_users')) || [];
                 users = users.map(u => u.email === currentUser.email ? currentUser : u);
                 localStorage.setItem('inucasty_users', JSON.stringify(users));
                 localStorage.setItem('inucasty_current_user', JSON.stringify(currentUser));
-                
                 localStorage.removeItem('pending_recharge');
-                alert(`Paiement validé ! ${pendingAmount} FCFA ajoutés à votre compte.`);
+                alert(`Paiement de ${pendingAmount} FCFA validé !`);
             }
         }
 
-        // Action de vote
         function vote(candidate, cost) {
             if (currentUser.voted) {
-                alert("Vous avez déjà voté lors de cette session !");
+                alert("Vous avez déjà voté !");
                 return;
             }
             if (currentUser.credits < cost) {
-                alert("Solde insuffisant ! Veuillez recharger votre compte.");
+                alert("Solde insuffisant !");
                 return;
             }
 
             currentUser.credits -= cost;
             currentUser.voted = true;
 
-            // Mettre à jour le stockage local
             let users = JSON.parse(localStorage.getItem('inucasty_users')) || [];
             users = users.map(u => u.email === currentUser.email ? currentUser : u);
             localStorage.setItem('inucasty_users', JSON.stringify(users));
             localStorage.setItem('inucasty_current_user', JSON.stringify(currentUser));
 
+            // Incrémenter les résultats du candidat
+            let currentVotes = parseInt(localStorage.getItem(`votes_${candidate}`)) || 0;
+            localStorage.setItem(`votes_${candidate}`, currentVotes + 1);
+
             updateBalanceUI();
-            alert(`Vote enregistré pour ${candidate} avec succès ! Merci de votre participation.`);
+            alert(`Votre vote pour ${candidate} a été enregistré !`);
         }
     </script>
 </body>
