@@ -344,16 +344,10 @@
                 </div>
             </div>
 
-            <!-- FORMULAIRE DE SOUMISSION DE LA RÉFÉRENCE -->
-            <form onsubmit="event.preventDefault(); submitManualPayment();" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Code / Référence SMS du transfert</label>
-                    <input type="text" id="pay-reference" required placeholder="Ex: 1234567890" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs uppercase font-mono">
-                </div>
-                <button type="submit" id="btn-submit-ref" class="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl text-xs shadow mt-2 transition">
-                    Soumettre pour validation (100 FCFA)
-                </button>
-            </form>
+            <!-- BOUTON DE SOUMISSION DIRECTE -->
+            <button onclick="submitManualPayment()" id="btn-submit-ref" class="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl text-xs shadow mt-2 transition">
+                J'ai effectué le dépôt (100 FCFA) - Demander la validation
+            </button>
         </div>
     </div>
 
@@ -555,11 +549,10 @@
                         pendingContainer.innerHTML += `
                             <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
                                 <div>
-                                    <p class="font-black text-xs text-blue-950">Étudiant / Compte ID : ${t.user_id || 'N/A'}</p>
-                                    <p class="text-xs text-slate-600 font-mono">Réf SMS : <span class="font-bold text-red-600">${t.reference}</span></p>
-                                    <p class="text-[10px] text-slate-400">Demandé : ${t.credits} crédit(s) (${t.amount} FCFA)</p>
+                                    <p class="font-black text-xs text-blue-950">Téléphone / Compte : ${t.phone_number}</p>
+                                    <p class="text-xs text-slate-600">Pack demandé : <span class="font-bold text-red-600">${t.credits} crédit(s) (${t.amount} FCFA)</span></p>
                                 </div>
-                                <button onclick="validateTransaction(${t.id}, '${t.reference}', ${t.credits})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow shrink-0">
+                                <button onclick="validateTransaction(${t.id}, '${t.phone_number}', ${t.credits})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow shrink-0">
                                     Valider et Créditer
                                 </button>
                             </div>
@@ -590,11 +583,16 @@
             }
         }
 
-        async function validateTransaction(txId, reference, creditsToAdd) {
+        async function validateTransaction(txId, targetPhone, creditsToAdd) {
             await _supabase.from('transactions').update({ status: 'VALIDATED' }).eq('id', txId);
 
-            // Pour l'admin, on peut associer la validation directement ou via le compte connecté de l'étudiant
-            alert("Transaction validée avec succès ! Pensez à vérifier que les crédits sont mis à jour pour l'étudiant concerné.");
+            const { data: targetUser } = await _supabase.from('users').select('*').eq('phone_number', targetPhone).single();
+            if (targetUser) {
+                const newBalance = (targetUser.credit_balance || 0) + creditsToAdd;
+                await _supabase.from('users').update({ credit_balance: newBalance }).eq('phone_number', targetPhone);
+            }
+
+            alert("Transaction validée avec succès ! Le compte de l'étudiant a été crédité.");
             loadAdminData();
         }
 
@@ -650,13 +648,11 @@
             event.currentTarget.classList.remove('border-slate-200');
             event.currentTarget.classList.add('border-blue-900', 'bg-blue-50');
 
-            document.getElementById('btn-submit-ref').innerText = `Soumettre pour validation (${a.toLocaleString()} FCFA)`;
+            document.getElementById('btn-submit-ref').innerText = `J'ai effectué le dépôt (${a.toLocaleString()} FCFA) - Demander la validation`;
         }
 
         async function submitManualPayment() {
             if (!currentUser) return;
-
-            const reference = document.getElementById('pay-reference').value.trim().toUpperCase();
 
             const { error } = await _supabase.from('transactions').insert([{
                 user_id: currentUser.id,
@@ -664,7 +660,7 @@
                 operator: 'MTN MoMo (654514400)',
                 credits: selectedPackCredits,
                 amount: selectedPackAmount,
-                reference: reference,
+                reference: `DEPOT_${Date.now()}`,
                 status: 'PENDING'
             }]);
 
@@ -673,8 +669,7 @@
                 return;
             }
 
-            alert("Demande de recharge soumise avec succès ! Un administrateur va vérifier votre référence sur le compte 654514400 et valider vos crédits.");
-            document.getElementById('pay-reference').value = '';
+            alert("Demande de recharge soumise avec succès ! L'administrateur va vérifier le dépôt sur le compte 654514400 et valider vos crédits.");
             closeRechargeModal();
         }
 
