@@ -336,10 +336,10 @@
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // CONFIGURATION TRANZAK SANDBOX
+        // CONFIGURATION TRANZAK LIVE (PRODUCTION)
         const TRANZAK_APP_ID = 'tzbk39kw9sqiy5q3';
-        const TRANZAK_APP_KEY = 'SAND_8BD336F0C785460F8695855DB55AC6AB';
-        const TRANZAK_API_URL = 'https://sandbox.tranzak.net/v1/payments/create-charge';
+        const TRANZAK_APP_KEY = 'PROD_4695751186FC4867A25CE526F33548A0';
+        const TRANZAK_API_URL = 'https://api.tranzak.net/v1/payments/create-charge';
 
         let currentUser = null;
         let selectedPackCredits = 1;
@@ -582,14 +582,14 @@
             document.getElementById('btn-pay').innerText = `Payer ${a.toLocaleString()} FCFA`;
         }
 
-        // INTEGRATION TRANZAK API (ROBUSTE ET SANS ERREUR DE NAVIGATION)
+        // INTEGRATION TRANZAK LIVE (PRODUCTION)
         async function processPayment() {
             if (!currentUser) return;
 
             const customRef = `INU_${currentUser.id}_${Date.now()}`;
             const btnPay = document.getElementById('btn-pay');
             btnPay.disabled = true;
-            btnPay.innerText = "Connexion à Tranzak...";
+            btnPay.innerText = "Connexion à Tranzak Live...";
 
             try {
                 const response = await fetch(TRANZAK_API_URL, {
@@ -620,28 +620,19 @@
 
                     window.location.href = result.data.paymentUrl;
                 } else {
-                    // Si l'API renvoie une restriction réseau ou de clé en mode sandbox, bascule automatique sur le mode de test validé
-                    console.warn("API directe limitée, simulation de validation Sandbox en cours...");
-                    simulateSandboxSuccess(selectedPackCredits, selectedPackAmount, customRef);
+                    alert("Erreur Tranzak : " + (result.message || "Impossible d'initier le paiement en direct."));
+                    btnPay.disabled = false;
+                    btnPay.innerText = `Payer ${selectedPackAmount.toLocaleString()} FCFA`;
                 }
             } catch (error) {
-                console.warn("Mode hors-ligne / CORS détecté, activation de la simulation de paiement Sandbox.");
-                simulateSandboxSuccess(selectedPackCredits, selectedPackAmount, customRef);
+                console.error("Erreur de paiement Live :", error);
+                alert("Erreur de connexion avec la passerelle de paiement officielle.");
+                btnPay.disabled = false;
+                btnPay.innerText = `Payer ${selectedPackAmount.toLocaleString()} FCFA`;
             }
         }
 
-        // Fonction de secours sécurisée pour valider instantanément les tests en Sandbox
-        async function simulateSandboxSuccess(credits, amount, ref) {
-            localStorage.setItem('pending_credits', credits);
-            localStorage.setItem('pending_amount', amount);
-            localStorage.setItem('pending_ref', ref);
-            localStorage.setItem('pending_user_id', currentUser.id);
-
-            alert("Simulation Sandbox Tranzak : Paiement accepté avec succès !");
-            location.reload();
-        }
-
-        // VERIFICATION CALLBACK DU PAIEMENT TRANZAK
+        // VERIFICATION CALLBACK DU PAIEMENT LIVE
         async function checkPendingTranzakPayment() {
             const pendingCredits = localStorage.getItem('pending_credits');
             const pendingAmount = localStorage.getItem('pending_amount');
@@ -651,7 +642,7 @@
             if (pendingCredits && pendingRef && currentUser && String(currentUser.id) === String(pendingUserId)) {
                 await _supabase.from('transactions').insert([{
                     phone_number: currentUser.phone_number,
-                    operator: 'Tranzak Sandbox',
+                    operator: 'Tranzak Live (OM/MoMo)',
                     credits: parseInt(pendingCredits),
                     amount: parseInt(pendingAmount),
                     reference: pendingRef
@@ -669,7 +660,7 @@
                 localStorage.removeItem('pending_user_id');
 
                 closeRechargeModal();
-                alert(`Paiement validé ! ${pendingCredits} crédit(s) ont été ajoutés à votre compte.`);
+                alert(`Paiement réel validé ! ${pendingCredits} crédit(s) ont été ajoutés à votre compte.`);
             }
         }
 
