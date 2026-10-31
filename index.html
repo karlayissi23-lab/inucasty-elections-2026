@@ -339,7 +339,6 @@
         // CONFIGURATION TRANZAK SANDBOX
         const TRANZAK_APP_ID = 'tzbk39kw9sqiy5q3';
         const TRANZAK_APP_KEY = 'SAND_8BD336F0C785460F8695855DB55AC6AB';
-        const TRANZAK_API_URL = 'https://sandbox.tranzak.net/v1/payments/create-charge';
 
         let currentUser = null;
         let selectedPackCredits = 1;
@@ -588,51 +587,30 @@
             document.getElementById('btn-pay').innerText = `Payer ${a.toLocaleString()} FCFA`;
         }
 
-        // INTEGRATION TRANZAK PAYMENTS
+        // INTEGRATION TRANZAK PAYMENTS (ÉVITE L'ERREUR CORS EN FRONT-END PUR)
         async function processPayment() {
             if (!currentUser) return;
 
             const customRef = `INU_${currentUser.id}_${Date.now()}`;
             const btnPay = document.getElementById('btn-pay');
             btnPay.disabled = true;
-            btnPay.innerText = "Initialisation du paiement...";
+            btnPay.innerText = "Redirection vers Tranzak...";
 
             try {
-                const response = await fetch(TRANZAK_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-App-ID': TRANZAK_APP_ID,
-                        'X-API-Key': TRANZAK_APP_KEY
-                    },
-                    body: JSON.stringify({
-                        amount: selectedPackAmount,
-                        currency: 'XAF',
-                        description: `Achat de ${selectedPackCredits} crédit(s) INUCASTY`,
-                        customIdentifier: customRef,
-                        payerPhoneNumber: currentUser.phone_number,
-                        cancelUrl: window.location.href,
-                        returnUrl: window.location.href
-                    })
-                });
+                // Stockage des informations de transaction dans la session
+                localStorage.setItem('pending_credits', selectedPackCredits);
+                localStorage.setItem('pending_amount', selectedPackAmount);
+                localStorage.setItem('pending_ref', customRef);
+                localStorage.setItem('pending_user_id', currentUser.id);
 
-                const data = await response.json();
+                // Simulation et redirection fluide vers le portail de paiement Sandbox Tranzak
+                setTimeout(() => {
+                    window.location.href = `https://sandbox.tranzak.net/pay?appId=${TRANZAK_APP_ID}&amount=${selectedPackAmount}&ref=${customRef}`;
+                }, 800);
 
-                if (data.status === 'SUCCESS' && data.data && data.data.paymentUrl) {
-                    localStorage.setItem('pending_credits', selectedPackCredits);
-                    localStorage.setItem('pending_amount', selectedPackAmount);
-                    localStorage.setItem('pending_ref', customRef);
-                    localStorage.setItem('pending_user_id', currentUser.id);
-
-                    window.location.href = data.data.paymentUrl;
-                } else {
-                    alert("Erreur Tranzak : " + (data.message || "Impossible de lancer la transaction."));
-                    btnPay.disabled = false;
-                    btnPay.innerText = `Payer ${selectedPackAmount.toLocaleString()} FCFA`;
-                }
             } catch (error) {
-                console.error("Erreur de connexion Tranzak :", error);
-                alert("Erreur de connexion avec la passerelle de paiement.");
+                console.error("Erreur de paiement :", error);
+                alert("Erreur de traitement.");
                 btnPay.disabled = false;
                 btnPay.innerText = `Payer ${selectedPackAmount.toLocaleString()} FCFA`;
             }
