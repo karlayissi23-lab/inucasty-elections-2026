@@ -532,7 +532,6 @@
             const { data: txs } = await _supabase.from('transactions').select('*').order('id', { ascending: false });
             const { data: cands } = await _supabase.from('candidates').select('*');
 
-            // Filtrer les transactions validées pour les stats financières
             const validTxs = txs ? txs.filter(t => t.status === 'VALIDATED') : [];
             const totalRev = validTxs.reduce((a, b) => a + b.amount, 0);
             const totalCreds = validTxs.reduce((a, b) => a + b.credits, 0);
@@ -542,7 +541,6 @@
             document.getElementById('admin-credits').innerText = totalCreds;
             document.getElementById('admin-votes').innerText = totalVotes;
 
-            // Affichage des transactions en attente
             const pendingContainer = document.getElementById('admin-pending-txs');
             const pendingTxs = txs ? txs.filter(t => t.status === 'PENDING' || !t.status) : [];
             
@@ -559,7 +557,7 @@
                                     <p class="text-xs text-slate-600 font-mono">Réf SMS : <span class="font-bold text-red-600">${t.reference}</span></p>
                                     <p class="text-[10px] text-slate-400">Demandé : ${t.credits} crédit(s) (${t.amount} FCFA)</p>
                                 </div>
-                                <button onclick="validateTransaction(${t.id}, ${t.user_id}, ${t.credits})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow shrink-0">
+                                <button onclick="validateTransaction(${t.id}, '${t.phone_number}', ${t.credits})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow shrink-0">
                                     Valider et Créditer
                                 </button>
                             </div>
@@ -568,7 +566,6 @@
                 }
             }
 
-            // Gestion des candidats
             const adminList = document.getElementById('admin-candidates-list');
             if (adminList && cands) {
                 adminList.innerHTML = '';
@@ -591,16 +588,13 @@
             }
         }
 
-        // VALIDATION D'UNE TRANSACTION PAR L'ADMIN
-        async function validateTransaction(txId, userId, creditsToAdd) {
-            // 1. Mettre à jour le statut de la transaction
+        async function validateTransaction(txId, targetPhone, creditsToAdd) {
             await _supabase.from('transactions').update({ status: 'VALIDATED' }).eq('id', txId);
 
-            // 2. Récupérer le solde actuel de l'étudiant et l'incrémenter
-            const { data: targetUser } = await _supabase.from('users').select('credit_balance').eq('id', userId).single();
+            const { data: targetUser } = await _supabase.from('users').select('*').eq('phone_number', targetPhone).single();
             if (targetUser) {
                 const newBalance = (targetUser.credit_balance || 0) + creditsToAdd;
-                await _supabase.from('users').update({ credit_balance: newBalance }).eq('id', userId);
+                await _supabase.from('users').update({ credit_balance: newBalance }).eq('phone_number', targetPhone);
             }
 
             alert("Transaction validée avec succès ! Le compte de l'étudiant a été crédité.");
@@ -645,7 +639,6 @@
             }
         }
 
-        // RECHARGE MANUELLE
         function openRechargeModal() { document.getElementById('modal-recharge').classList.remove('hidden'); document.getElementById('modal-recharge').classList.add('flex'); }
         function closeRechargeModal() { document.getElementById('modal-recharge').classList.add('hidden'); }
 
@@ -669,9 +662,7 @@
             const senderPhone = document.getElementById('pay-sender-phone').value.trim();
             const reference = document.getElementById('pay-reference').value.trim().toUpperCase();
 
-            // Enregistrement de la transaction en attente dans Supabase
             const { error } = await _supabase.from('transactions').insert([{
-                user_id: currentUser.id,
                 phone_number: senderPhone,
                 operator: 'Transfert Direct (OM/MoMo)',
                 credits: selectedPackCredits,
@@ -685,7 +676,7 @@
                 return;
             }
 
-            alert("Demande de recharge soumise avec succès ! Un administrateur va valider votre transfert sous peu et vos crédits apparaîtront sur votre compte.");
+            alert("Demande de recharge soumise avec succès ! Un administrateur va valider votre transfert sous peu.");
             document.getElementById('pay-sender-phone').value = '';
             document.getElementById('pay-reference').value = '';
             closeRechargeModal();
