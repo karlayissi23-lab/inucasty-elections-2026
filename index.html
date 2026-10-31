@@ -160,7 +160,7 @@
                         Tarif : 1 Vote = 100 FCFA
                     </span>
                     <h2 class="text-xl font-extrabold mt-1">Achetez vos crédits de vote</h2>
-                    <p class="text-xs text-blue-100">Rechargez par Orange Money ou MTN Mobile Money.</p>
+                    <p class="text-xs text-blue-100">Transférez par Orange Money ou MTN Mobile Money.</p>
                 </div>
                 <button onclick="openRechargeModal()" class="bg-white text-blue-950 font-black text-xs px-5 py-3 rounded-2xl shadow transition shrink-0 flex items-center space-x-2">
                     <i class="fa-solid fa-wallet text-red-600"></i>
@@ -198,7 +198,7 @@
                     <img src="https://lh3.googleusercontent.com/d/1000154615.png" class="w-8 h-8 object-contain">
                     <div>
                         <h2 class="font-black text-sm">Dashboard Administrateur INUCASTY</h2>
-                        <p class="text-[10px] text-blue-200">Axe Financier & Suivi des Votes</p>
+                        <p class="text-[10px] text-blue-200">Validation des Transferts & Suivi des Votes</p>
                     </div>
                 </div>
                 <button onclick="exitAdmin()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow">
@@ -211,15 +211,15 @@
             <!-- REVENUE STATS -->
             <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white p-5 rounded-2xl border-2 border-red-500/20 shadow-xs">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Fonds Collectés (FCFA)</span>
+                    <span class="text-xs font-bold text-slate-500 uppercase">Fonds Validés (FCFA)</span>
                     <h3 id="admin-revenue" class="text-2xl font-black text-red-600 mt-1">0 FCFA</h3>
-                    <p class="text-[11px] text-slate-400 mt-1">Recettes Mobile Money</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Recettes confirmées</p>
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Crédits Vendus</span>
+                    <span class="text-xs font-bold text-slate-500 uppercase">Crédits Distribués</span>
                     <h3 id="admin-credits" class="text-2xl font-black text-blue-950 mt-1">0</h3>
-                    <p class="text-[11px] text-slate-400 mt-1">Total jetons achetés</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Total jetons validés</p>
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
@@ -229,8 +229,16 @@
                 </div>
             </section>
 
-            <!-- CANDIDATES MANAGEMENT -->
+            <!-- GESTION DES RECHARGES EN ATTENTE -->
             <section class="space-y-3">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-500">Demandes de recharge en attente de validation</h3>
+                <div id="admin-pending-txs" class="space-y-2">
+                    <!-- Dynamic -->
+                </div>
+            </section>
+
+            <!-- CANDIDATES MANAGEMENT -->
+            <section class="space-y-3 pt-4 border-t border-slate-200">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xs font-black uppercase tracking-wider text-slate-500">Gestion des Candidats</h3>
                     <button onclick="openCandidateModal()" class="bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
@@ -295,36 +303,55 @@
         </div>
     </div>
 
-    <!-- MODAL RECHARGE -->
+    <!-- MODAL RECHARGE (TRANSFERT DIRECT + CODE SMS) -->
     <div id="modal-recharge" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
             <button onclick="closeRechargeModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark"></i></button>
 
-            <h3 class="text-lg font-black text-blue-950 mb-1">Acheter des Crédits</h3>
-            <p class="text-xs text-slate-500 mb-4">Paiement Mobile Money (1 crédit = 100 FCFA)</p>
+            <h3 class="text-lg font-black text-blue-950 mb-1">Recharge par Transfert Direct</h3>
+            <p class="text-xs text-slate-500 mb-4">1 Crédit = 100 FCFA</p>
 
-            <div class="grid grid-cols-2 gap-2 mb-4">
-                <button onclick="selectPack(1, 100)" id="pack-1" class="pack-btn border-2 border-blue-900 bg-blue-50 p-3 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-sm">1 Crédit</span>
-                    <span class="text-xs font-bold text-red-600">100 FCFA</span>
+            <!-- INSTRUCTIONS NUMÉROS MARCHANDS -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 space-y-1 text-xs text-amber-900">
+                <p class="font-bold">1. Effectuez le transfert vers nos comptes :</p>
+                <p>🟠 <strong>Orange Money :</strong> <span class="font-mono font-bold text-blue-950">690 00 00 00</span></p>
+                <p>🟡 <strong>MTN MoMo :</strong> <span class="font-mono font-bold text-blue-950">670 00 00 00</span></p>
+            </div>
+
+            <!-- CHOIX DU PACK -->
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <button onclick="selectPack(1, 100)" id="pack-1" class="pack-btn border-2 border-blue-900 bg-blue-50 p-2.5 rounded-2xl text-left">
+                    <span class="block font-black text-blue-950 text-xs">1 Crédit</span>
+                    <span class="text-[11px] font-bold text-red-600">100 FCFA</span>
                 </button>
-                <button onclick="selectPack(5, 500)" id="pack-5" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-sm">5 Crédits</span>
-                    <span class="text-xs font-bold text-red-600">500 FCFA</span>
+                <button onclick="selectPack(5, 500)" id="pack-5" class="pack-btn border-2 border-slate-200 p-2.5 rounded-2xl text-left">
+                    <span class="block font-black text-blue-950 text-xs">5 Crédits</span>
+                    <span class="text-[11px] font-bold text-red-600">500 FCFA</span>
                 </button>
-                <button onclick="selectPack(10, 1000)" id="pack-10" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-sm">10 Crédits</span>
-                    <span class="text-xs font-bold text-red-600">1 000 FCFA</span>
+                <button onclick="selectPack(10, 1000)" id="pack-10" class="pack-btn border-2 border-slate-200 p-2.5 rounded-2xl text-left">
+                    <span class="block font-black text-blue-950 text-xs">10 Crédits</span>
+                    <span class="text-[11px] font-bold text-red-600">1 000 FCFA</span>
                 </button>
-                <button onclick="selectPack(20, 2000)" id="pack-20" class="pack-btn border-2 border-slate-200 p-3 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-sm">20 Crédits</span>
-                    <span class="text-xs font-bold text-red-600">2 000 FCFA</span>
+                <button onclick="selectPack(20, 2000)" id="pack-20" class="pack-btn border-2 border-slate-200 p-2.5 rounded-2xl text-left">
+                    <span class="block font-black text-blue-950 text-xs">20 Crédits</span>
+                    <span class="text-[11px] font-bold text-red-600">2 000 FCFA</span>
                 </button>
             </div>
 
-            <button onclick="processPayment()" id="btn-pay" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-xs shadow">
-                Payer 100 FCFA
-            </button>
+            <!-- FORMULAIRE DE SOUMISSION DE LA RÉFÉRENCE -->
+            <form onsubmit="event.preventDefault(); submitManualPayment();" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Votre Numéro émetteur</label>
+                    <input type="tel" id="pay-sender-phone" required placeholder="Ex: 69XXXXXXX" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Code / Référence SMS de transaction</label>
+                    <input type="text" id="pay-reference" required placeholder="Ex: PP260312.1234.A12345" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs uppercase font-mono">
+                </div>
+                <button type="submit" id="btn-submit-ref" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-xs shadow mt-2">
+                    Soumettre pour validation (100 FCFA)
+                </button>
+            </form>
         </div>
     </div>
 
@@ -335,11 +362,6 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRidWt6ZXVsbmpybnljd2J0cmd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMzkwMTksImV4cCI6MjEwODkxNTAxOX0.APtldnt92ZkxP7sImB78uuMaDEWis01CHMjfP_v9E28';
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // CONFIGURATION TRANZAK LIVE (PRODUCTION)
-        const TRANZAK_APP_ID = 'tzbk39kw9sqiy5q3';
-        const TRANZAK_APP_KEY = 'PROD_4695751186FC4867A25CE526F33548A0';
-        const TRANZAK_API_URL = 'https://api.tranzak.net/v1/payments/create-charge';
 
         let currentUser = null;
         let selectedPackCredits = 1;
@@ -412,7 +434,18 @@
             document.getElementById('user-credits').innerText = currentUser.credit_balance;
             loadCandidates();
             initChart();
-            checkPendingTranzakPayment();
+            
+            // Actualiser le solde régulièrement
+            setInterval(refreshUserBalance, 10000);
+        }
+
+        async function refreshUserBalance() {
+            if (!currentUser) return;
+            const { data } = await _supabase.from('users').select('credit_balance').eq('id', currentUser.id).single();
+            if (data) {
+                currentUser.credit_balance = data.credit_balance;
+                document.getElementById('user-credits').innerText = data.credit_balance;
+            }
         }
 
         async function loadCandidates() {
@@ -449,7 +482,9 @@
         }
 
         async function voteCandidate(candId) {
+            await refreshUserBalance();
             if (currentUser.credit_balance < 1) {
+                alert("Solde insuffisant. Veuillez recharger vos crédits.");
                 openRechargeModal();
                 return;
             }
@@ -494,17 +529,46 @@
         }
 
         async function loadAdminData() {
-            const { data: txs } = await _supabase.from('transactions').select('*');
+            const { data: txs } = await _supabase.from('transactions').select('*').order('id', { ascending: false });
             const { data: cands } = await _supabase.from('candidates').select('*');
 
-            const totalRev = txs ? txs.reduce((a, b) => a + b.amount, 0) : 0;
-            const totalCreds = txs ? txs.reduce((a, b) => a + b.credits, 0) : 0;
+            // Filtrer les transactions validées pour les stats financières
+            const validTxs = txs ? txs.filter(t => t.status === 'VALIDATED') : [];
+            const totalRev = validTxs.reduce((a, b) => a + b.amount, 0);
+            const totalCreds = validTxs.reduce((a, b) => a + b.credits, 0);
             const totalVotes = cands ? cands.reduce((a, b) => a + b.votes, 0) : 0;
 
             document.getElementById('admin-revenue').innerText = `${totalRev.toLocaleString()} FCFA`;
             document.getElementById('admin-credits').innerText = totalCreds;
             document.getElementById('admin-votes').innerText = totalVotes;
 
+            // Affichage des transactions en attente
+            const pendingContainer = document.getElementById('admin-pending-txs');
+            const pendingTxs = txs ? txs.filter(t => t.status === 'PENDING' || !t.status) : [];
+            
+            if (pendingContainer) {
+                pendingContainer.innerHTML = '';
+                if (pendingTxs.length === 0) {
+                    pendingContainer.innerHTML = '<p class="text-xs text-slate-400 italic bg-white p-3 rounded-2xl border border-slate-200">Aucune demande en attente.</p>';
+                } else {
+                    pendingTxs.forEach(t => {
+                        pendingContainer.innerHTML += `
+                            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
+                                <div>
+                                    <p class="font-black text-xs text-blue-950">Téléphone : ${t.phone_number}</p>
+                                    <p class="text-xs text-slate-600 font-mono">Réf SMS : <span class="font-bold text-red-600">${t.reference}</span></p>
+                                    <p class="text-[10px] text-slate-400">Demandé : ${t.credits} crédit(s) (${t.amount} FCFA)</p>
+                                </div>
+                                <button onclick="validateTransaction(${t.id}, ${t.user_id}, ${t.credits})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow shrink-0">
+                                    Valider et Créditer
+                                </button>
+                            </div>
+                        `;
+                    });
+                }
+            }
+
+            // Gestion des candidats
             const adminList = document.getElementById('admin-candidates-list');
             if (adminList && cands) {
                 adminList.innerHTML = '';
@@ -525,6 +589,22 @@
                     `;
                 });
             }
+        }
+
+        // VALIDATION D'UNE TRANSACTION PAR L'ADMIN
+        async function validateTransaction(txId, userId, creditsToAdd) {
+            // 1. Mettre à jour le statut de la transaction
+            await _supabase.from('transactions').update({ status: 'VALIDATED' }).eq('id', txId);
+
+            // 2. Récupérer le solde actuel de l'étudiant et l'incrémenter
+            const { data: targetUser } = await _supabase.from('users').select('credit_balance').eq('id', userId).single();
+            if (targetUser) {
+                const newBalance = (targetUser.credit_balance || 0) + creditsToAdd;
+                await _supabase.from('users').update({ credit_balance: newBalance }).eq('id', userId);
+            }
+
+            alert("Transaction validée avec succès ! Le compte de l'étudiant a été crédité.");
+            loadAdminData();
         }
 
         function openCandidateModal() {
@@ -565,6 +645,7 @@
             }
         }
 
+        // RECHARGE MANUELLE
         function openRechargeModal() { document.getElementById('modal-recharge').classList.remove('hidden'); document.getElementById('modal-recharge').classList.add('flex'); }
         function closeRechargeModal() { document.getElementById('modal-recharge').classList.add('hidden'); }
 
@@ -579,89 +660,35 @@
             event.currentTarget.classList.remove('border-slate-200');
             event.currentTarget.classList.add('border-blue-900', 'bg-blue-50');
 
-            document.getElementById('btn-pay').innerText = `Payer ${a.toLocaleString()} FCFA`;
+            document.getElementById('btn-submit-ref').innerText = `Soumettre pour validation (${a.toLocaleString()} FCFA)`;
         }
 
-        // INTEGRATION TRANZAK LIVE (PRODUCTION)
-        async function processPayment() {
+        async function submitManualPayment() {
             if (!currentUser) return;
 
-            const customRef = `INU_${currentUser.id}_${Date.now()}`;
-            const btnPay = document.getElementById('btn-pay');
-            btnPay.disabled = true;
-            btnPay.innerText = "Connexion à Tranzak Live...";
+            const senderPhone = document.getElementById('pay-sender-phone').value.trim();
+            const reference = document.getElementById('pay-reference').value.trim().toUpperCase();
 
-            try {
-                const response = await fetch(TRANZAK_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-App-ID': TRANZAK_APP_ID,
-                        'X-API-Key': TRANZAK_APP_KEY
-                    },
-                    body: JSON.stringify({
-                        amount: selectedPackAmount,
-                        currency: 'XAF',
-                        description: `Achat de ${selectedPackCredits} crédit(s) INUCASTY`,
-                        customIdentifier: customRef,
-                        payerPhoneNumber: currentUser.phone_number,
-                        cancelUrl: window.location.href,
-                        returnUrl: window.location.href
-                    })
-                });
+            // Enregistrement de la transaction en attente dans Supabase
+            const { error } = await _supabase.from('transactions').insert([{
+                user_id: currentUser.id,
+                phone_number: senderPhone,
+                operator: 'Transfert Direct (OM/MoMo)',
+                credits: selectedPackCredits,
+                amount: selectedPackAmount,
+                reference: reference,
+                status: 'PENDING'
+            }]);
 
-                const result = await response.json();
-
-                if (result.status === 'SUCCESS' && result.data && result.data.paymentUrl) {
-                    localStorage.setItem('pending_credits', selectedPackCredits);
-                    localStorage.setItem('pending_amount', selectedPackAmount);
-                    localStorage.setItem('pending_ref', customRef);
-                    localStorage.setItem('pending_user_id', currentUser.id);
-
-                    window.location.href = result.data.paymentUrl;
-                } else {
-                    alert("Erreur Tranzak : " + (result.message || "Impossible d'initier le paiement en direct."));
-                    btnPay.disabled = false;
-                    btnPay.innerText = `Payer ${selectedPackAmount.toLocaleString()} FCFA`;
-                }
-            } catch (error) {
-                console.error("Erreur de paiement Live :", error);
-                alert("Erreur de connexion avec la passerelle de paiement officielle.");
-                btnPay.disabled = false;
-                btnPay.innerText = `Payer ${selectedPackAmount.toLocaleString()} FCFA`;
+            if (error) {
+                alert("Erreur lors de la soumission : " + error.message);
+                return;
             }
-        }
 
-        // VERIFICATION CALLBACK DU PAIEMENT LIVE
-        async function checkPendingTranzakPayment() {
-            const pendingCredits = localStorage.getItem('pending_credits');
-            const pendingAmount = localStorage.getItem('pending_amount');
-            const pendingRef = localStorage.getItem('pending_ref');
-            const pendingUserId = localStorage.getItem('pending_user_id');
-
-            if (pendingCredits && pendingRef && currentUser && String(currentUser.id) === String(pendingUserId)) {
-                await _supabase.from('transactions').insert([{
-                    phone_number: currentUser.phone_number,
-                    operator: 'Tranzak Live (OM/MoMo)',
-                    credits: parseInt(pendingCredits),
-                    amount: parseInt(pendingAmount),
-                    reference: pendingRef
-                }]);
-
-                const newBalance = (currentUser.credit_balance || 0) + parseInt(pendingCredits);
-                await _supabase.from('users').update({ credit_balance: newBalance }).eq('id', currentUser.id);
-
-                currentUser.credit_balance = newBalance;
-                document.getElementById('user-credits').innerText = newBalance;
-
-                localStorage.removeItem('pending_credits');
-                localStorage.removeItem('pending_amount');
-                localStorage.removeItem('pending_ref');
-                localStorage.removeItem('pending_user_id');
-
-                closeRechargeModal();
-                alert(`Paiement réel validé ! ${pendingCredits} crédit(s) ont été ajoutés à votre compte.`);
-            }
+            alert("Demande de recharge soumise avec succès ! Un administrateur va valider votre transfert sous peu et vos crédits apparaîtront sur votre compte.");
+            document.getElementById('pay-sender-phone').value = '';
+            document.getElementById('pay-reference').value = '';
+            closeRechargeModal();
         }
 
         function logout() { currentUser = null; location.reload(); }
