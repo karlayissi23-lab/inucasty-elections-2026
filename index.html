@@ -160,10 +160,10 @@
                         Tarif : 1 Vote = 100 FCFA
                     </span>
                     <h2 class="text-xl font-extrabold mt-1">Achetez vos crédits de vote</h2>
-                    <p class="text-xs text-blue-100">Transférez directement sur le numéro MTN Mobile Money.</p>
+                    <p class="text-xs text-blue-100">Contactez-nous directement sur WhatsApp pour l'achat de vos crédits.</p>
                 </div>
-                <button onclick="openRechargeModal()" class="bg-white text-blue-950 font-black text-xs px-5 py-3 rounded-2xl shadow transition shrink-0 flex items-center space-x-2">
-                    <i class="fa-solid fa-wallet text-red-600"></i>
+                <button onclick="redirectToWhatsApp()" class="bg-white text-blue-950 font-black text-xs px-5 py-3 rounded-2xl shadow transition shrink-0 flex items-center space-x-2 hover:bg-slate-100">
+                    <i class="fa-brands fa-whatsapp text-green-600 text-base"></i>
                     <span>Acheter des Crédits</span>
                 </button>
             </div>
@@ -198,7 +198,7 @@
                     <img src="https://lh3.googleusercontent.com/d/1000154615.png" class="w-8 h-8 object-contain">
                     <div>
                         <h2 class="font-black text-sm">Dashboard Administrateur INUCASTY</h2>
-                        <p class="text-[10px] text-blue-200">Validation des Transferts & Suivi des Votes</p>
+                        <p class="text-[10px] text-blue-200">Suivi des Votes</p>
                     </div>
                 </div>
                 <button onclick="exitAdmin()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow">
@@ -209,13 +209,7 @@
 
         <main class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-6">
             <!-- REVENUE STATS -->
-            <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white p-5 rounded-2xl border-2 border-red-500/20 shadow-xs">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Fonds Validés (FCFA)</span>
-                    <h3 id="admin-revenue" class="text-2xl font-black text-red-600 mt-1">0 FCFA</h3>
-                    <p class="text-[11px] text-slate-400 mt-1">Recettes confirmées</p>
-                </div>
-
+            <section class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
                     <span class="text-xs font-bold text-slate-500 uppercase">Crédits Distribués</span>
                     <h3 id="admin-credits" class="text-2xl font-black text-blue-950 mt-1">0</h3>
@@ -226,14 +220,6 @@
                     <span class="text-xs font-bold text-slate-500 uppercase">Votes Comptabilisés</span>
                     <h3 id="admin-votes" class="text-2xl font-black text-blue-950 mt-1">0</h3>
                     <p class="text-[11px] text-slate-400 mt-1">Base PostgreSQL Supabase</p>
-                </div>
-            </section>
-
-            <!-- GESTION DES RECHARGES EN ATTENTE -->
-            <section class="space-y-3">
-                <h3 class="text-xs font-black uppercase tracking-wider text-slate-500">Demandes de recharge en attente de validation</h3>
-                <div id="admin-pending-txs" class="space-y-2">
-                    <!-- Dynamic -->
                 </div>
             </section>
 
@@ -303,54 +289,6 @@
         </div>
     </div>
 
-    <!-- MODAL RECHARGE (DEPOT PAR MTN MOMO) -->
-    <div id="modal-recharge" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
-            <button onclick="closeRechargeModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark"></i></button>
-
-            <h3 class="text-lg font-black text-blue-950 mb-1">Acheter des Crédits de Vote</h3>
-            <p class="text-xs text-slate-500 mb-3">1 Crédit = 100 FCFA</p>
-
-            <!-- CHOIX DU PACK DE VOTE -->
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">1. Choisissez votre offre :</label>
-            <div class="grid grid-cols-2 gap-2 mb-4">
-                <button onclick="selectPack(1, 100)" id="pack-1" class="pack-btn border-2 border-blue-900 bg-blue-50 p-2.5 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-xs">1 Crédit</span>
-                    <span class="text-[11px] font-bold text-red-600">100 FCFA</span>
-                </button>
-                <button onclick="selectPack(5, 500)" id="pack-5" class="pack-btn border-2 border-slate-200 p-2.5 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-xs">5 Crédits</span>
-                    <span class="text-[11px] font-bold text-red-600">500 FCFA</span>
-                </button>
-                <button onclick="selectPack(10, 1000)" id="pack-10" class="pack-btn border-2 border-slate-200 p-2.5 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-xs">10 Crédits</span>
-                    <span class="text-[11px] font-bold text-red-600">1 000 FCFA</span>
-                </button>
-                <button onclick="selectPack(20, 2000)" id="pack-20" class="pack-btn border-2 border-slate-200 p-2.5 rounded-2xl text-left">
-                    <span class="block font-black text-blue-950 text-xs">20 Crédits</span>
-                    <span class="text-[11px] font-bold text-red-600">2 000 FCFA</span>
-                </button>
-            </div>
-
-            <!-- INSTRUCTIONS DE DÉPÔT NUMÉRO SPÉCIFIÉ -->
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 space-y-1.5 text-xs text-amber-950">
-                <p class="font-bold text-amber-900">2. Effectuez le dépôt vers le numéro suivant :</p>
-                <div class="bg-white/80 p-2 rounded-xl border border-amber-300 space-y-0.5">
-                    <p class="font-bold flex items-center gap-1.5 text-blue-950">
-                        <span>🟡 MTN Mobile Money :</span>
-                        <span class="font-mono text-sm text-red-600 font-extrabold">654514400</span>
-                    </p>
-                    <p class="text-[11px] text-slate-700"><strong>Nom du compte :</strong> BILONGO JOSEPH DYVAN</p>
-                </div>
-            </div>
-
-            <!-- BOUTON DE SOUMISSION DIRECTE -->
-            <button onclick="submitManualPayment()" id="btn-submit-ref" class="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl text-xs shadow mt-2 transition">
-                J'ai effectué le dépôt (100 FCFA) - Demander la validation
-            </button>
-        </div>
-    </div>
-
     <!-- LOGIQUE JAVASCRIPT & SUPABASE -->
     <script>
         // CONFIGURATION SUPABASE OFFICIELLE
@@ -360,8 +298,6 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
-        let selectedPackCredits = 1;
-        let selectedPackAmount = 100;
         let candidatesData = [];
         let votesChart = null;
 
@@ -481,7 +417,7 @@
             await refreshUserBalance();
             if (currentUser.credit_balance < 1) {
                 alert("Solde insuffisant. Veuillez recharger vos crédits.");
-                openRechargeModal();
+                redirectToWhatsApp();
                 return;
             }
 
@@ -494,6 +430,14 @@
             await _supabase.from('candidates').update({ votes: cand.votes + 1 }).eq('id', candId);
 
             loadCandidates();
+        }
+
+        // REDIRECTION WHATSAPP
+        function redirectToWhatsApp() {
+            const name = currentUser ? currentUser.full_name : "Visiteur";
+            const phone = currentUser ? currentUser.phone_number : "Non renseigné";
+            const message = encodeURIComponent(`Bonjour, je souhaite acheter des crédits de vote pour les élections INUCASTY.\n\nNom : ${name}\nTéléphone : ${phone}`);
+            window.open(`https://wa.me/+237693500169?text=${message}`, '_blank');
         }
 
         // ADMIN LOGIN & MANAGEMENT
@@ -525,41 +469,14 @@
         }
 
         async function loadAdminData() {
-            const { data: txs } = await _supabase.from('transactions').select('*').order('id', { ascending: false });
             const { data: cands } = await _supabase.from('candidates').select('*');
+            const { data: usersList } = await _supabase.from('users').select('credit_balance');
 
-            const validTxs = txs ? txs.filter(t => t.status === 'VALIDATED') : [];
-            const totalRev = validTxs.reduce((a, b) => a + b.amount, 0);
-            const totalCreds = validTxs.reduce((a, b) => a + b.credits, 0);
+            const totalCreds = usersList ? usersList.reduce((a, b) => a + (b.credit_balance || 0), 0) : 0;
             const totalVotes = cands ? cands.reduce((a, b) => a + b.votes, 0) : 0;
 
-            document.getElementById('admin-revenue').innerText = `${totalRev.toLocaleString()} FCFA`;
             document.getElementById('admin-credits').innerText = totalCreds;
             document.getElementById('admin-votes').innerText = totalVotes;
-
-            const pendingContainer = document.getElementById('admin-pending-txs');
-            const pendingTxs = txs ? txs.filter(t => t.status === 'PENDING' || !t.status) : [];
-            
-            if (pendingContainer) {
-                pendingContainer.innerHTML = '';
-                if (pendingTxs.length === 0) {
-                    pendingContainer.innerHTML = '<p class="text-xs text-slate-400 italic bg-white p-3 rounded-2xl border border-slate-200">Aucune demande en attente.</p>';
-                } else {
-                    pendingTxs.forEach(t => {
-                        pendingContainer.innerHTML += `
-                            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
-                                <div>
-                                    <p class="font-black text-xs text-blue-950">Téléphone / Compte : ${t.phone_number}</p>
-                                    <p class="text-xs text-slate-600">Pack demandé : <span class="font-bold text-red-600">${t.credits} crédit(s) (${t.amount} FCFA)</span></p>
-                                </div>
-                                <button onclick="validateTransaction(${t.id}, '${t.phone_number}', ${t.credits})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow shrink-0">
-                                    Valider et Créditer
-                                </button>
-                            </div>
-                        `;
-                    });
-                }
-            }
 
             const adminList = document.getElementById('admin-candidates-list');
             if (adminList && cands) {
@@ -581,19 +498,6 @@
                     `;
                 });
             }
-        }
-
-        async function validateTransaction(txId, targetPhone, creditsToAdd) {
-            await _supabase.from('transactions').update({ status: 'VALIDATED' }).eq('id', txId);
-
-            const { data: targetUser } = await _supabase.from('users').select('*').eq('phone_number', targetPhone).single();
-            if (targetUser) {
-                const newBalance = (targetUser.credit_balance || 0) + creditsToAdd;
-                await _supabase.from('users').update({ credit_balance: newBalance }).eq('phone_number', targetPhone);
-            }
-
-            alert("Transaction validée avec succès ! Le compte de l'étudiant a été crédité.");
-            loadAdminData();
         }
 
         function openCandidateModal() {
@@ -632,45 +536,6 @@
                 await _supabase.from('candidates').delete().eq('id', id);
                 loadAdminData();
             }
-        }
-
-        function openRechargeModal() { document.getElementById('modal-recharge').classList.remove('hidden'); document.getElementById('modal-recharge').classList.add('flex'); }
-        function closeRechargeModal() { document.getElementById('modal-recharge').classList.add('hidden'); }
-
-        function selectPack(c, a) {
-            selectedPackCredits = c;
-            selectedPackAmount = a;
-            
-            document.querySelectorAll('.pack-btn').forEach(btn => {
-                btn.classList.remove('border-blue-900', 'bg-blue-50');
-                btn.classList.add('border-slate-200');
-            });
-            event.currentTarget.classList.remove('border-slate-200');
-            event.currentTarget.classList.add('border-blue-900', 'bg-blue-50');
-
-            document.getElementById('btn-submit-ref').innerText = `J'ai effectué le dépôt (${a.toLocaleString()} FCFA) - Demander la validation`;
-        }
-
-        async function submitManualPayment() {
-            if (!currentUser) return;
-
-            const { error } = await _supabase.from('transactions').insert([{
-                user_id: currentUser.id,
-                phone_number: currentUser.phone_number,
-                operator: 'MTN MoMo (654514400)',
-                credits: selectedPackCredits,
-                amount: selectedPackAmount,
-                reference: `DEPOT_${Date.now()}`,
-                status: 'PENDING'
-            }]);
-
-            if (error) {
-                alert("Erreur lors de la soumission : " + error.message);
-                return;
-            }
-
-            alert("Demande de recharge soumise avec succès ! L'administrateur va vérifier le dépôt sur le compte 654514400 et valider vos crédits.");
-            closeRechargeModal();
         }
 
         function logout() { currentUser = null; location.reload(); }
