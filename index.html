@@ -160,7 +160,7 @@
                         Tarif : 1 Vote = 100 FCFA
                     </span>
                     <h2 class="text-xl font-extrabold mt-1">Achetez vos crédits de vote</h2>
-                    <p class="text-xs text-blue-100">Transférez par Orange Money ou MTN Mobile Money.</p>
+                    <p class="text-xs text-blue-100">Transférez directement sur le numéro MTN Mobile Money.</p>
                 </div>
                 <button onclick="openRechargeModal()" class="bg-white text-blue-950 font-black text-xs px-5 py-3 rounded-2xl shadow transition shrink-0 flex items-center space-x-2">
                     <i class="fa-solid fa-wallet text-red-600"></i>
@@ -303,23 +303,17 @@
         </div>
     </div>
 
-    <!-- MODAL RECHARGE (TRANSFERT DIRECT + CODE SMS) -->
+    <!-- MODAL RECHARGE (DEPOT PAR MTN MOMO) -->
     <div id="modal-recharge" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
             <button onclick="closeRechargeModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark"></i></button>
 
-            <h3 class="text-lg font-black text-blue-950 mb-1">Recharge par Transfert Direct</h3>
-            <p class="text-xs text-slate-500 mb-4">1 Crédit = 100 FCFA</p>
+            <h3 class="text-lg font-black text-blue-950 mb-1">Acheter des Crédits de Vote</h3>
+            <p class="text-xs text-slate-500 mb-3">1 Crédit = 100 FCFA</p>
 
-            <!-- INSTRUCTIONS NUMÉROS MARCHANDS -->
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 space-y-1 text-xs text-amber-900">
-                <p class="font-bold">1. Effectuez le transfert vers nos comptes :</p>
-                <p>🟠 <strong>Orange Money :</strong> <span class="font-mono font-bold text-blue-950">690 00 00 00</span></p>
-                <p>🟡 <strong>MTN MoMo :</strong> <span class="font-mono font-bold text-blue-950">670 00 00 00</span></p>
-            </div>
-
-            <!-- CHOIX DU PACK -->
-            <div class="grid grid-cols-2 gap-2 mb-3">
+            <!-- CHOIX DU PACK DE VOTE -->
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">1. Choisissez votre offre :</label>
+            <div class="grid grid-cols-2 gap-2 mb-4">
                 <button onclick="selectPack(1, 100)" id="pack-1" class="pack-btn border-2 border-blue-900 bg-blue-50 p-2.5 rounded-2xl text-left">
                     <span class="block font-black text-blue-950 text-xs">1 Crédit</span>
                     <span class="text-[11px] font-bold text-red-600">100 FCFA</span>
@@ -338,17 +332,29 @@
                 </button>
             </div>
 
+            <!-- INSTRUCTIONS DE DÉPÔT NUMÉRO SPÉCIFIÉ -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 space-y-1.5 text-xs text-amber-950">
+                <p class="font-bold text-amber-900">2. Effectuez le dépôt vers le numéro suivant :</p>
+                <div class="bg-white/80 p-2 rounded-xl border border-amber-300 space-y-0.5">
+                    <p class="font-bold flex items-center gap-1.5 text-blue-950">
+                        <span>🟡 MTN Mobile Money :</span>
+                        <span class="font-mono text-sm text-red-600 font-extrabold">654514400</span>
+                    </p>
+                    <p class="text-[11px] text-slate-700"><strong>Nom du compte :</strong> BILONGO JOSEPH DYVAN</p>
+                </div>
+            </div>
+
             <!-- FORMULAIRE DE SOUMISSION DE LA RÉFÉRENCE -->
             <form onsubmit="event.preventDefault(); submitManualPayment();" class="space-y-3">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Votre Numéro émetteur</label>
-                    <input type="tel" id="pay-sender-phone" required placeholder="Ex: 69XXXXXXX" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs">
+                    <input type="tel" id="pay-sender-phone" required placeholder="Ex: 6XXXXXXXX" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Code / Référence SMS de transaction</label>
-                    <input type="text" id="pay-reference" required placeholder="Ex: PP260312.1234.A12345" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs uppercase font-mono">
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Code / Référence SMS du transfert</label>
+                    <input type="text" id="pay-reference" required placeholder="Ex: 1234567890" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs uppercase font-mono">
                 </div>
-                <button type="submit" id="btn-submit-ref" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-xs shadow mt-2">
+                <button type="submit" id="btn-submit-ref" class="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl text-xs shadow mt-2 transition">
                     Soumettre pour validation (100 FCFA)
                 </button>
             </form>
@@ -664,7 +670,7 @@
 
             const { error } = await _supabase.from('transactions').insert([{
                 phone_number: senderPhone,
-                operator: 'Transfert Direct (OM/MoMo)',
+                operator: 'MTN Mobile Money Direct',
                 credits: selectedPackCredits,
                 amount: selectedPackAmount,
                 reference: reference,
@@ -676,7 +682,7 @@
                 return;
             }
 
-            alert("Demande de recharge soumise avec succès ! Un administrateur va valider votre transfert sous peu.");
+            alert("Demande de recharge soumise avec succès ! L'administrateur va valider votre transfert vers le 654514400 sous peu et vos crédits seront ajoutés.");
             document.getElementById('pay-sender-phone').value = '';
             document.getElementById('pay-reference').value = '';
             closeRechargeModal();
