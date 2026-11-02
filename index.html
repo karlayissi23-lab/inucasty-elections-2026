@@ -520,7 +520,7 @@
             `;
         }
 
-        // ================= FONCTION DE VOTE DIRECTE (SANS FONCTION RPC SQL) =================
+        // ================= FONCTION DE VOTE DIRECTE =================
         async function voteCandidate(candId) {
             if (!currentUser) {
                 alert("Veuillez vous connecter pour voter.");
@@ -568,12 +568,12 @@
             loadCandidates();
         }
 
-        // REDIRECTION WHATSAPP
+        // REDIRECTION WHATSAPP VERS +237 654 514 400
         function redirectToWhatsApp() {
             const name = currentUser ? currentUser.full_name : "Visiteur";
             const phone = currentUser ? currentUser.phone_number : "Non renseigné";
             const message = encodeURIComponent(`Bonjour, je souhaite acheter des crédits de vote pour les élections INUCASTY.\n\nNom : ${name}\nTéléphone : ${phone}`);
-            window.open(`https://wa.me/+237693500169?text=${message}`, '_blank');
+            window.open(`https://wa.me/+237654514400?text=${message}`, '_blank');
         }
 
         // ADMIN LOGIN & MANAGEMENT
