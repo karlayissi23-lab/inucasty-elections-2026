@@ -437,8 +437,8 @@
             loadCandidates();
             initChart();
             
-            // Actualiser le solde moins fréquemment pour optimiser les performances (toutes les 30s)
-            setInterval(refreshUserBalance, 30000);
+            // Actualiser le solde
+            setInterval(refreshUserBalance, 10000);
         }
 
         async function refreshUserBalance() {
@@ -520,69 +520,52 @@
             `;
         }
 
-        // ================= FONCTION DE VOTE SÉCURISÉE ET OPTIMISÉE (RPC + OPTIMISTIC UI) =================
+        // ================= FONCTION DE VOTE DIRECTE (SANS FONCTION RPC SQL) =================
         async function voteCandidate(candId) {
             if (!currentUser) {
                 alert("Veuillez vous connecter pour voter.");
                 return;
             }
 
-            // 1. Vérification rapide locale du solde
+            await refreshUserBalance();
+
             if (currentUser.credit_balance < 1) {
                 alert("Solde insuffisant. Veuillez recharger vos crédits.");
                 redirectToWhatsApp();
                 return;
             }
 
-            // Sauvegarde des états pour annulation (rollback) en cas d'erreur
-            const previousBalance = currentUser.credit_balance;
+            const newBalance = currentUser.credit_balance - 1;
+            
+            // 1. Mise à jour du solde utilisateur dans Supabase
+            const { error: userError } = await _supabase
+                .from('users')
+                .update({ credit_balance: newBalance })
+                .eq('id', currentUser.id);
+
+            if (userError) {
+                alert("Erreur lors du débit du solde : " + userError.message);
+                return;
+            }
+
+            // 2. Mise à jour locale du solde
+            currentUser.credit_balance = newBalance;
+            document.getElementById('user-credits').innerText = newBalance;
+
+            // 3. Incrémentation du vote du candidat dans Supabase
             const cand = candidatesData.find(c => c.id === candId);
-            const previousVotes = cand ? cand.votes : 0;
-
-            // 2. MISE À JOUR OPTIMISTE IMMÉDIATE (0ms de latence visuelle)
-            currentUser.credit_balance -= 1;
-            document.getElementById('user-credits').innerText = currentUser.credit_balance;
-
             if (cand) {
-                cand.votes += 1;
-                renderCandidates();
-                if (votesChart) updateChart();
-            }
+                const { error: candError } = await _supabase
+                    .from('candidates')
+                    .update({ votes: cand.votes + 1 })
+                    .eq('id', candId);
 
-            // 3. APPEL SÉCURISÉ CÔTÉ SERVEUR (Procédure stockée RPC Supabase)
-            try {
-                const { data, error } = await _supabase.rpc('cast_vote', {
-                    p_user_id: currentUser.id,
-                    p_candidate_id: candId
-                });
-
-                if (error) throw error;
-
-                // Si le serveur refuse (ex: triche ou solde réel insuffisant)
-                if (!data || !data.success) {
-                    alert(data?.message || "Impossible d'enregistrer le vote.");
-                    rollbackVote(cand, previousBalance, previousVotes);
-                } else {
-                    // Synchronisation du solde exact retourné par la base de données
-                    currentUser.credit_balance = data.new_balance;
-                    document.getElementById('user-credits').innerText = currentUser.credit_balance;
+                if (candError) {
+                    alert("Erreur lors de l'enregistrement du vote : " + candError.message);
                 }
-            } catch (err) {
-                console.error("Erreur de vote :", err);
-                alert("Erreur de connexion. Votre vote n'a pas pu être validé.");
-                rollbackVote(cand, previousBalance, previousVotes);
             }
-        }
 
-        // Fonction d'annulation en cas d'échec serveur
-        function rollbackVote(cand, oldBalance, oldVotes) {
-            currentUser.credit_balance = oldBalance;
-            document.getElementById('user-credits').innerText = oldBalance;
-            if (cand) {
-                cand.votes = oldVotes;
-                renderCandidates();
-                if (votesChart) updateChart();
-            }
+            loadCandidates();
         }
 
         // REDIRECTION WHATSAPP
