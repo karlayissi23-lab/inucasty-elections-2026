@@ -198,7 +198,7 @@
                     <img src="https://image.jimcdn.com/app/cms/image/transf/none/path/s808584e5371b6bc2/image/i15bc59ce2fe00ca5/version/1656073422/image.png" class="w-8 h-8 object-contain">
                     <div>
                         <h2 class="font-black text-sm">Dashboard Administrateur INUCASTY</h2>
-                        <p class="text-[10px] text-blue-200">Suivi des Votes</p>
+                        <p class="text-[10px] text-blue-200">Suivi des Votes par Campus</p>
                     </div>
                 </div>
                 <button onclick="exitAdmin()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow">
@@ -223,15 +223,46 @@
                 </div>
             </section>
 
-            <!-- CANDIDATES MANAGEMENT -->
-            <section class="space-y-3 pt-4 border-t border-slate-200">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-500">Gestion des Candidats</h3>
-                    <button onclick="openCandidateModal()" class="bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
-                        + Ajouter un Candidat
-                    </button>
+            <!-- GESTION DES CANDIDATS PAR CAMPUS -->
+            <section class="space-y-6 pt-2">
+                <!-- BLOC 1 : CAMPUS DE MVOLYE -->
+                <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-red-600"></i> Campus de Mvolyé
+                        </h3>
+                        <button onclick="openCandidateModal('Campus de Mvolyé')" class="bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
+                            + Ajouter un Candidat
+                        </button>
+                    </div>
+                    <div id="admin-list-mvolye" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
                 </div>
-                <div id="admin-candidates-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+
+                <!-- BLOC 2 : CAMPUS D'ETOUDI -->
+                <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-red-600"></i> Campus d'Etoudi
+                        </h3>
+                        <button onclick="openCandidateModal('Campus d\'Etoudi')" class="bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
+                            + Ajouter un Candidat
+                        </button>
+                    </div>
+                    <div id="admin-list-etoudi" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                </div>
+
+                <!-- BLOC 3 : CAMPUS DE VOGT-HIGHTECH -->
+                <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-red-600"></i> Campus de Vogt-Hightech
+                        </h3>
+                        <button onclick="openCandidateModal('Campus de Vogt-Hightech')" class="bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
+                            + Ajouter un Candidat
+                        </button>
+                    </div>
+                    <div id="admin-list-vogt" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                </div>
             </section>
         </main>
     </div>
@@ -267,9 +298,10 @@
             <button onclick="closeCandidateModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark"></i></button>
 
             <h3 class="text-lg font-black text-blue-950 mb-1">Ajouter un Candidat</h3>
-            <p class="text-xs text-slate-500 mb-4">Renseignez les informations du candidat</p>
+            <p id="modal-campus-subtitle" class="text-xs text-slate-500 mb-4">Campus : ---</p>
 
             <form onsubmit="event.preventDefault(); saveNewCandidate();" class="space-y-3">
+                <input type="hidden" id="new-cand-campus">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nom et Prénom</label>
                     <input type="text" id="new-cand-name" required placeholder="Ex: Marie Tagne" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs">
@@ -400,6 +432,7 @@
                             <div>
                                 <h4 class="font-black text-slate-800 text-sm">${c.name}</h4>
                                 <span class="text-[11px] text-slate-400 font-medium">${c.role}</span>
+                                <span class="block text-[10px] text-red-600 font-bold">${c.campus || 'Campus Général'}</span>
                             </div>
                         </div>
                         <div class="flex justify-between items-center pt-3 border-t border-slate-100">
@@ -478,29 +511,63 @@
             document.getElementById('admin-credits').innerText = totalCreds;
             document.getElementById('admin-votes').innerText = totalVotes;
 
-            const adminList = document.getElementById('admin-candidates-list');
-            if (adminList && cands) {
-                adminList.innerHTML = '';
-                cands.forEach(c => {
-                    adminList.innerHTML += `
-                        <div class="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-xs">
-                            <div class="flex items-center space-x-3">
-                                <img src="${c.img}" class="w-10 h-10 rounded-xl object-cover">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-800">${c.name}</h4>
-                                    <p class="text-[10px] text-slate-400">${c.role} - <span class="text-red-600 font-bold">${c.votes} votes</span></p>
-                                </div>
-                            </div>
-                            <button onclick="deleteCandidate(${c.id})" class="text-slate-400 hover:text-red-600 text-xs px-2 py-1">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                });
+            // Séparation dans les 3 blocs de campus
+            const listMvolye = document.getElementById('admin-list-mvolye');
+            const listEtoudi = document.getElementById('admin-list-etoudi');
+            const listVogt = document.getElementById('admin-list-vogt');
+
+            if (cands) {
+                listMvolye.innerHTML = '';
+                listEtoudi.innerHTML = '';
+                listVogt.innerHTML = '';
+
+                const mvolyeCands = cands.filter(c => c.campus === 'Campus de Mvolyé');
+                const etoudiCands = cands.filter(c => c.campus === 'Campus d\'Etoudi');
+                const vogtCands = cands.filter(c => c.campus === 'Campus de Vogt-Hightech' || !c.campus);
+
+                // Remplissage Mvolyé
+                if (mvolyeCands.length === 0) {
+                    listMvolye.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
+                } else {
+                    mvolyeCands.forEach(c => renderAdminCard(listMvolye, c));
+                }
+
+                // Remplissage Etoudi
+                if (etoudiCands.length === 0) {
+                    listEtoudi.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
+                } else {
+                    etoudiCands.forEach(c => renderAdminCard(listEtoudi, c));
+                }
+
+                // Remplissage Vogt-Hightech
+                if (vogtCands.length === 0) {
+                    listVogt.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
+                } else {
+                    vogtCands.forEach(c => renderAdminCard(listVogt, c));
+                }
             }
         }
 
-        function openCandidateModal() {
+        function renderAdminCard(container, c) {
+            container.innerHTML += `
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-xs">
+                    <div class="flex items-center space-x-3">
+                        <img src="${c.img}" class="w-10 h-10 rounded-xl object-cover">
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-800">${c.name}</h4>
+                            <p class="text-[10px] text-slate-400">${c.role} - <span class="text-red-600 font-bold">${c.votes} votes</span></p>
+                        </div>
+                    </div>
+                    <button onclick="deleteCandidate(${c.id})" class="text-slate-400 hover:text-red-600 text-xs px-2 py-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function openCandidateModal(campusName) {
+            document.getElementById('new-cand-campus').value = campusName;
+            document.getElementById('modal-campus-subtitle').innerText = `Campus : ${campusName}`;
             document.getElementById('modal-candidate').classList.remove('hidden');
             document.getElementById('modal-candidate').classList.add('flex');
         }
@@ -513,10 +580,11 @@
             const name = document.getElementById('new-cand-name').value.trim();
             const role = document.getElementById('new-cand-role').value.trim();
             const img = document.getElementById('new-cand-img').value.trim();
+            const campus = document.getElementById('new-cand-campus').value;
 
             const { error } = await _supabase
                 .from('candidates')
-                .insert([{ name: name, role: role, img: img, votes: 0 }]);
+                .insert([{ name: name, role: role, img: img, campus: campus, votes: 0 }]);
 
             if (error) {
                 alert("Erreur lors de l'ajout du candidat : " + error.message);
