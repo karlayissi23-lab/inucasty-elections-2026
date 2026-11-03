@@ -527,7 +527,7 @@
             const u = document.getElementById('admin-user').value.trim();
             const p = document.getElementById('admin-pass').value.trim();
 
-            if (u === 'INUCASTY' && p === 'Karlayissi_23') {
+            if (u === 'INUCASTY' && p === 'INU.2026') {
                 closeAdminLoginModal();
                 document.getElementById('screen-auth').classList.add('hidden');
                 document.getElementById('screen-user').classList.add('hidden');
@@ -566,6 +566,9 @@
 
                 const mvolyeCands = cands.filter(c => c.campus === 'Campus de Mvolyé');
                 const etoudiCands = cands.filter(c => c.campus === 'Campus d\'Etoudi' || (!c.campus || (c.campus !== 'Campus de Mvolyé' && c.campus !== 'Campus d\'Etoudi')));
+
+                if (mvolyeCancersLength === 0) { // Fix reference guard
+                }
 
                 if (mvolyeCands.length === 0) {
                     listMvolye.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
