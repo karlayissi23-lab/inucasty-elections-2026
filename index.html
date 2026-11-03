@@ -349,8 +349,8 @@
                     <input type="text" id="new-cand-role" required placeholder="Ex: Master 1 Droit" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lien de la photo (URL)</label>
-                    <input type="url" id="new-cand-img" required placeholder="https://images.unsplash.com/..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs">
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lien de la photo (URL) <span class="text-slate-400 font-normal">(Optionnel)</span></label>
+                    <input type="url" id="new-cand-img" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs">
                 </div>
                 <button type="submit" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-xs mt-2 shadow">
                     Enregistrer le candidat
@@ -501,10 +501,13 @@
         }
 
         function renderUserCandidateCard(container, c) {
+            const defaultImg = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250";
+            const candidateImg = (c.img && c.img.trim() !== '') ? c.img : defaultImg;
+
             container.innerHTML += `
                 <div class="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col justify-between shadow-xs">
                     <div class="flex items-center space-x-3 mb-3">
-                        <img src="${c.img}" class="w-12 h-12 rounded-2xl object-cover border-2 border-blue-900">
+                        <img src="${candidateImg}" class="w-12 h-12 rounded-2xl object-cover border-2 border-blue-900">
                         <div>
                             <h4 class="font-black text-slate-800 text-sm">${c.name}</h4>
                             <span class="text-[11px] text-slate-400 font-medium">${c.role}</span>
@@ -657,10 +660,13 @@
         }
 
         function renderAdminCard(container, c) {
+            const defaultImg = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250";
+            const candidateImg = (c.img && c.img.trim() !== '') ? c.img : defaultImg;
+
             container.innerHTML += `
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-xs">
                     <div class="flex items-center space-x-3">
-                        <img src="${c.img}" class="w-10 h-10 rounded-xl object-cover">
+                        <img src="${candidateImg}" class="w-10 h-10 rounded-xl object-cover">
                         <div>
                             <h4 class="font-bold text-xs text-slate-800">${c.name}</h4>
                             <p class="text-[10px] text-slate-400">${c.role} - <span class="text-red-600 font-bold">${c.votes} votes</span></p>
