@@ -168,7 +168,7 @@
                 </button>
             </div>
 
-            <!-- CANDIDATS CLASSÉS PAR CAMPUS -->
+            <!-- CANDIDATS CLASSÉS PAR CAMPUS (2 CAMPUS) -->
             <section class="space-y-6">
                 <!-- CAMPUS MVOLYE -->
                 <div class="space-y-3">
@@ -184,22 +184,6 @@
                         <i class="fa-solid fa-location-dot text-red-600"></i> Campus d'Etoudi
                     </h3>
                     <div id="user-candidates-etoudi" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
-                </div>
-
-                <!-- CAMPUS VOGT HIGHTECH -->
-                <div class="space-y-3">
-                    <h3 class="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-2 border-b border-slate-200 pb-2">
-                        <i class="fa-solid fa-location-dot text-red-600"></i> Campus de Vogt-Hightech
-                    </h3>
-                    <div id="user-candidates-vogt" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
-                </div>
-
-                <!-- CAMPUS MFOU -->
-                <div class="space-y-3">
-                    <h3 class="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-2 border-b border-slate-200 pb-2">
-                        <i class="fa-solid fa-location-dot text-red-600"></i> Campus de Mfou
-                    </h3>
-                    <div id="user-candidates-mfou" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
                 </div>
             </section>
 
@@ -248,7 +232,7 @@
                 </div>
             </section>
 
-            <!-- GESTION DES CANDIDATS PAR CAMPUS (4 BLOCS) -->
+            <!-- GESTION DES CANDIDATS PAR CAMPUS (2 BLOCS) -->
             <section class="space-y-6 pt-2">
                 <!-- BLOC 1 : CAMPUS DE MVOLYE -->
                 <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs space-y-3">
@@ -274,32 +258,6 @@
                         </button>
                     </div>
                     <div id="admin-list-etoudi" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
-                </div>
-
-                <!-- BLOC 3 : CAMPUS DE VOGT-HIGHTECH -->
-                <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-2">
-                            <i class="fa-solid fa-location-dot text-red-600"></i> Campus de Vogt-Hightech
-                        </h3>
-                        <button onclick="openCandidateModal('Campus de Vogt-Hightech')" class="bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
-                            + Ajouter un Candidat
-                        </button>
-                    </div>
-                    <div id="admin-list-vogt" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
-                </div>
-
-                <!-- BLOC 4 : CAMPUS DE MFOU -->
-                <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-2">
-                            <i class="fa-solid fa-location-dot text-red-600"></i> Campus de Mfou
-                        </h3>
-                        <button onclick="openCandidateModal('Campus de Mfou')" class="bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
-                            + Ajouter un Candidat
-                        </button>
-                    </div>
-                    <div id="admin-list-mfou" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
                 </div>
             </section>
         </main>
@@ -349,8 +307,8 @@
                     <input type="text" id="new-cand-role" required placeholder="Ex: Master 1 Droit" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lien de la photo (URL)</label>
-                    <input type="url" id="new-cand-img" required placeholder="https://images.unsplash.com/..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs">
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lien de la photo (URL) <span class="text-slate-400 font-normal">(Optionnel)</span></label>
+                    <input type="url" id="new-cand-img" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs">
                 </div>
                 <button type="submit" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-xs mt-2 shadow">
                     Enregistrer le candidat
@@ -462,18 +420,12 @@
         function renderCandidates() {
             const listMvolye = document.getElementById('user-candidates-mvolye');
             const listEtoudi = document.getElementById('user-candidates-etoudi');
-            const listVogt = document.getElementById('user-candidates-vogt');
-            const listMfou = document.getElementById('user-candidates-mfou');
 
             listMvolye.innerHTML = '';
             listEtoudi.innerHTML = '';
-            listVogt.innerHTML = '';
-            listMfou.innerHTML = '';
 
             const mvolyeCands = candidatesData.filter(c => c.campus === 'Campus de Mvolyé');
-            const etoudiCands = candidatesData.filter(c => c.campus === 'Campus d\'Etoudi');
-            const vogtCands = candidatesData.filter(c => c.campus === 'Campus de Vogt-Hightech');
-            const mfouCands = candidatesData.filter(c => c.campus === 'Campus de Mfou' || !c.campus);
+            const etoudiCands = candidatesData.filter(c => c.campus === 'Campus d\'Etoudi' || (!c.campus || (c.campus !== 'Campus de Mvolyé' && c.campus !== 'Campus d\'Etoudi')));
 
             if (mvolyeCands.length === 0) {
                 listMvolye.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3">Aucun candidat enregistré pour ce campus.</p>';
@@ -486,25 +438,16 @@
             } else {
                 etoudiCands.forEach(c => renderUserCandidateCard(listEtoudi, c));
             }
-
-            if (vogtCands.length === 0) {
-                listVogt.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3">Aucun candidat enregistré pour ce campus.</p>';
-            } else {
-                vogtCands.forEach(c => renderUserCandidateCard(listVogt, c));
-            }
-
-            if (mfouCands.length === 0) {
-                listMfou.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3">Aucun candidat enregistré pour ce campus.</p>';
-            } else {
-                mfouCands.forEach(c => renderUserCandidateCard(listMfou, c));
-            }
         }
 
         function renderUserCandidateCard(container, c) {
+            const defaultImg = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250";
+            const candidateImg = (c.img && c.img.trim() !== '') ? c.img : defaultImg;
+
             container.innerHTML += `
                 <div class="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col justify-between shadow-xs">
                     <div class="flex items-center space-x-3 mb-3">
-                        <img src="${c.img}" class="w-12 h-12 rounded-2xl object-cover border-2 border-blue-900">
+                        <img src="${candidateImg}" class="w-12 h-12 rounded-2xl object-cover border-2 border-blue-900">
                         <div>
                             <h4 class="font-black text-slate-800 text-sm">${c.name}</h4>
                             <span class="text-[11px] text-slate-400 font-medium">${c.role}</span>
@@ -616,19 +559,13 @@
 
             const listMvolye = document.getElementById('admin-list-mvolye');
             const listEtoudi = document.getElementById('admin-list-etoudi');
-            const listVogt = document.getElementById('admin-list-vogt');
-            const listMfou = document.getElementById('admin-list-mfou');
 
             if (cands) {
                 listMvolye.innerHTML = '';
                 listEtoudi.innerHTML = '';
-                listVogt.innerHTML = '';
-                listMfou.innerHTML = '';
 
                 const mvolyeCands = cands.filter(c => c.campus === 'Campus de Mvolyé');
-                const etoudiCands = cands.filter(c => c.campus === 'Campus d\'Etoudi');
-                const vogtCands = cands.filter(c => c.campus === 'Campus de Vogt-Hightech');
-                const mfouCands = cands.filter(c => c.campus === 'Campus de Mfou' || !c.campus);
+                const etoudiCands = cands.filter(c => c.campus === 'Campus d\'Etoudi' || (!c.campus || (c.campus !== 'Campus de Mvolyé' && c.campus !== 'Campus d\'Etoudi')));
 
                 if (mvolyeCands.length === 0) {
                     listMvolye.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
@@ -641,26 +578,17 @@
                 } else {
                     etoudiCands.forEach(c => renderAdminCard(listEtoudi, c));
                 }
-
-                if (vogtCands.length === 0) {
-                    listVogt.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
-                } else {
-                    vogtCands.forEach(c => renderAdminCard(listVogt, c));
-                }
-
-                if (mfouCands.length === 0) {
-                    listMfou.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
-                } else {
-                    mfouCands.forEach(c => renderAdminCard(listMfou, c));
-                }
             }
         }
 
         function renderAdminCard(container, c) {
+            const defaultImg = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250";
+            const candidateImg = (c.img && c.img.trim() !== '') ? c.img : defaultImg;
+
             container.innerHTML += `
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-xs">
                     <div class="flex items-center space-x-3">
-                        <img src="${c.img}" class="w-10 h-10 rounded-xl object-cover">
+                        <img src="${candidateImg}" class="w-10 h-10 rounded-xl object-cover">
                         <div>
                             <h4 class="font-bold text-xs text-slate-800">${c.name}</h4>
                             <p class="text-[10px] text-slate-400">${c.role} - <span class="text-red-600 font-bold">${c.votes} votes</span></p>
