@@ -328,6 +328,8 @@
         let currentUser = null;
         let candidatesData = [];
         let votesChart = null;
+        let refreshInterval = null;
+        const MAX_VOTES_PER_CANDIDATE = 100000; // Limite fixée à 100 000 votes
 
         // AUTH & VIEWS
         function toggleAuthView(view) {
@@ -392,11 +394,16 @@
             document.getElementById('screen-user').classList.remove('hidden');
             document.getElementById('user-name-label').innerText = currentUser.full_name;
             document.getElementById('user-credits').innerText = currentUser.credit_balance;
+            
             loadCandidates();
             initChart();
             
-            // Actualiser le solde
-            setInterval(refreshUserBalance, 10000);
+            // Actualiser le solde et les candidats toutes les 10 secondes (10000ms)
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                refreshUserBalance();
+                loadCandidates();
+            }, 10000);
         }
 
         async function refreshUserBalance() {
@@ -463,7 +470,7 @@
             `;
         }
 
-        // ================= FONCTION DE VOTE DIRECTE =================
+        // ================= FONCTION DE VOTE INCRÉMENTALE ET PLAFONNÉE À 100 000 =================
         async function voteCandidate(candId) {
             if (!currentUser) {
                 alert("Veuillez vous connecter pour voter.");
@@ -478,9 +485,29 @@
                 return;
             }
 
+            // Fetch du nombre de votes actuel du candidat en base pour éviter d'écraser avec une ancienne valeur
+            const { data: latestCandidateData, error: candFetchError } = await _supabase
+                .from('candidates')
+                .select('votes')
+                .eq('id', candId)
+                .single();
+
+            if (candFetchError || !latestCandidateData) {
+                alert("Erreur lors de la récupération des données du candidat.");
+                return;
+            }
+
+            const currentCandidateVotes = latestCandidateData.votes || 0;
+
+            // Vérification de la limite stricte de 100 000 votes
+            if (currentCandidateVotes >= MAX_VOTES_PER_CANDIDATE) {
+                alert("Ce candidat a atteint la limite maximale autorisée de 100 000 votes.");
+                return;
+            }
+
             const newBalance = currentUser.credit_balance - 1;
             
-            // 1. Mise à jour du solde utilisateur dans Supabase
+            // 1. Déduction du solde utilisateur dans Supabase
             const { error: userError } = await _supabase
                 .from('users')
                 .update({ credit_balance: newBalance })
@@ -495,17 +522,15 @@
             currentUser.credit_balance = newBalance;
             document.getElementById('user-credits').innerText = newBalance;
 
-            // 3. Incrémentation du vote du candidat dans Supabase
-            const cand = candidatesData.find(c => c.id === candId);
-            if (cand) {
-                const { error: candError } = await _supabase
-                    .from('candidates')
-                    .update({ votes: cand.votes + 1 })
-                    .eq('id', candId);
+            // 3. Incrémentation stricte (+1) du vote du candidat dans Supabase
+            const newVotesCount = currentCandidateVotes + 1;
+            const { error: candError } = await _supabase
+                .from('candidates')
+                .update({ votes: newVotesCount })
+                .eq('id', candId);
 
-                if (candError) {
-                    alert("Erreur lors de l'enregistrement du vote : " + candError.message);
-                }
+            if (candError) {
+                alert("Erreur lors de l'enregistrement du vote : " + candError.message);
             }
 
             loadCandidates();
@@ -532,7 +557,11 @@
                 document.getElementById('screen-auth').classList.add('hidden');
                 document.getElementById('screen-user').classList.add('hidden');
                 document.getElementById('screen-admin').classList.remove('hidden');
+                
                 loadAdminData();
+                // Actualiser également le tableau de bord Admin toutes les 10 secondes
+                if (refreshInterval) clearInterval(refreshInterval);
+                refreshInterval = setInterval(loadAdminData, 10000);
             } else {
                 alert("Nom d'utilisateur ou mot de passe Administrateur incorrect.");
             }
@@ -566,9 +595,6 @@
 
                 const mvolyeCands = cands.filter(c => c.campus === 'Campus de Mvolyé');
                 const etoudiCands = cands.filter(c => c.campus === 'Campus d\'Etoudi' || (!c.campus || (c.campus !== 'Campus de Mvolyé' && c.campus !== 'Campus d\'Etoudi')));
-
-                if (mvolyeCancersLength === 0) { // Fix reference guard
-                }
 
                 if (mvolyeCands.length === 0) {
                     listMvolye.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun candidat dans ce campus.</p>';
@@ -645,7 +671,11 @@
             }
         }
 
-        function logout() { currentUser = null; location.reload(); }
+        function logout() { 
+            if (refreshInterval) clearInterval(refreshInterval);
+            currentUser = null; 
+            location.reload(); 
+        }
 
         // CHART
         function initChart() {
